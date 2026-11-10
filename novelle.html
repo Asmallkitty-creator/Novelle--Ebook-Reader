@@ -1,0 +1,677 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Novelle</title>
+<style>
+:root{--bg:#120c26;--bg2:#1c1338;--fg:#f1ecff;--mut:#9a8fc4;--ac:#a67bff;--ac2:#ff9a6b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme=dark]){--bg:#faf7ff;--bg2:#ece6fb;--fg:#1d1537;--mut:#6b5f93}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font:15px system-ui,-apple-system,Segoe UI,sans-serif;overflow:hidden}
+#app{height:100%;display:flex;flex-direction:column}
+.pg{display:none;flex:1;overflow:auto;padding:14px 16px 90px}.pg.on{display:block}
+h1{font:600 26px Georgia,serif;margin:4px 0 12px;display:flex;align-items:center;gap:10px}h1 img{width:34px;border-radius:9px}
+h2{font:600 13px system-ui;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin:20px 0 8px}
+button,select,input{font:inherit;color:inherit}
+.btn{background:linear-gradient(135deg,var(--ac),#e06cc4);border:0;color:#fff;padding:10px 16px;border-radius:12px;font-weight:600}
+.ghost{background:var(--bg2);border:0;padding:9px 12px;border-radius:10px}
+input[type=search],input[type=text]{width:100%;background:var(--bg2);border:0;border-radius:12px;padding:12px 14px;outline:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:14px;margin-top:12px}
+.bk{position:relative}.bk img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:8px;box-shadow:0 6px 16px #0006;display:block;background:var(--bg2)}
+.bk b{display:block;font-size:12px;margin-top:6px;line-height:1.2;overflow:hidden;max-height:2.4em}.bk i{font-size:11px;color:var(--mut);font-style:normal}
+.bar{height:3px;background:var(--bg2);border-radius:2px;margin-top:4px}.bar u{display:block;height:100%;background:var(--ac);border-radius:2px}
+.hero{display:flex;gap:14px;background:linear-gradient(135deg,var(--bg2),#2b1a5a55);border-radius:18px;padding:14px;margin-top:12px}.hero img{width:84px;border-radius:8px;aspect-ratio:2/3;object-fit:cover}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--bg2);padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));z-index:5}
+nav button{flex:1;background:none;border:0;color:var(--mut);font-size:12px}nav button.on{color:var(--ac)}nav span{display:block;font-size:20px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0}.row select{background:var(--bg2);border:0;padding:8px;border-radius:8px}
+.ics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.ics img{width:100%;border-radius:22%;border:3px solid transparent}.ics img.on{border-color:var(--ac)}
+.sw{display:flex;gap:10px;flex-wrap:wrap}.sw div{width:42px;height:42px;border-radius:50%;border:3px solid transparent;font-size:15px;display:grid;place-items:center}.sw .on{border-color:var(--ac)}
+.empty{color:var(--mut);padding:24px 0;text-align:center}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:8px;margin:12px 0}.stats div{background:var(--bg2);border-radius:14px;padding:12px 4px;text-align:center}.stats b{display:block;font-size:20px}.stats small{color:var(--mut);font-size:11px}.hs{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px}.hs .bk{flex:0 0 100px}details{background:var(--bg2);border-radius:14px;padding:12px;margin-top:12px}summary{cursor:pointer}#prof input[type=number]{width:70px;background:var(--bg2);border:0;border-radius:8px;padding:8px}.chip{display:inline-block;background:var(--bg2);padding:8px 14px;border-radius:20px;margin:0 8px 8px 0}
+#rd{position:fixed;inset:0;z-index:10;display:none}#rd.on{display:block}
+#view{position:absolute;inset:0;overflow:hidden}
+#zones{position:absolute;inset:0;z-index:2}
+.tb{position:absolute;left:0;right:0;z-index:4;background:var(--bg2);color:var(--fg);padding:8px 12px;display:flex;gap:8px;align-items:center;transition:transform .25s}
+#top{top:0;padding-top:calc(8px + env(safe-area-inset-top,0px))}#bot{bottom:0;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+#rd.hide #top{transform:translateY(-110%)}#rd.hide #bot{transform:translateY(110%)}
+.tb button{background:none;border:0;font-size:19px;padding:6px 8px}.tb .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}
+#bot input{flex:1}
+#sheet{position:absolute;left:0;right:0;bottom:0;max-height:70%;overflow:auto;background:var(--bg2);color:var(--fg);z-index:6;border-radius:18px 18px 0 0;padding:16px;transform:translateY(110%);transition:transform .25s}
+#sheet.on{transform:none}#sheet .it{padding:11px 4px;border-bottom:1px solid #8883}
+#txt{position:absolute;inset:0;overflow:auto;padding:70px 22px;white-space:pre-wrap}
+#cv{display:block;margin:0 auto}
+</style></head><body>
+<div id="app">
+<section class="pg on" id="ph"><div id="home"></div></section>
+<section class="pg" id="pc"><h1>Collections</h1><div style="display:flex;gap:8px"><input type="text" id="cname" placeholder="New collection name"><button class="btn" id="cadd">Create</button></div><div id="cl"></div></section>
+<section class="pg" id="p0">
+<h1><img id="logo"> Novelle</h1>
+<input type="search" id="q" placeholder="Search title, author… (typo-tolerant)">
+<div style="display:flex;gap:8px;margin:12px 0 0">
+<button class="btn" id="imp">+ Import books</button><button class="ghost" id="impf">Import folder</button>
+<select class="ghost" id="sort"><option value="opened">Last opened</option><option value="added">Date added</option><option value="title">Title</option><option value="author">Author</option><option value="pct">Progress</option></select></div>
+<input type="file" id="fi" multiple accept=".epub,.pdf,.txt,.html,.htm" hidden>
+<input type="file" id="ff" webkitdirectory multiple hidden>
+<div id="hero"></div><div class="grid" id="grid"></div><div class="empty" id="e0" hidden>No books yet. Tap “Import books” to add EPUB, PDF or TXT files.</div>
+</section>
+<section class="pg" id="p1"><h1>Discover</h1><div id="disc"></div></section>
+<section class="pg" id="p2"><h1>Profile</h1><div id="prof"></div><h2>Settings</h2>
+<h2>Reading theme</h2><div class="sw" id="sw"></div>
+<div class="row">Font<select id="ff2"><option value="Georgia,serif">Georgia</option><option value="system-ui,sans-serif">Sans</option><option value="'Times New Roman',serif">Times</option><option value="ui-monospace,monospace">Mono</option></select></div>
+<div class="row">Font size<input type="range" id="fs" min="12" max="32"></div>
+<div class="row">Line height<input type="range" id="lh" min="12" max="22"></div>
+<div class="row">Reading mode<select id="md"><option value="paginated">Paginated</option><option value="scrolled-doc">Continuous scroll</option></select></div>
+<div class="row">Page animation<select id="an"><option value="slide">Slide</option><option value="fade">Fade</option><option value="flip">3D Flip</option><option value="none">None</option></select></div>
+<h2>App icon</h2><div class="ics" id="ics"></div>
+<p class="empty" style="text-align:left;padding:8px 0">The chosen icon is saved, used as the app logo and set as the home-screen icon the next time you “Add to Home Screen”. A web app can’t swap a launcher icon after install; that needs the native Android build.</p>
+<h2>Data</h2><button class="ghost" id="wipe">Delete all books</button>
+</section>
+<nav><button class="on" data-p="ph">Home</button><button data-p="p0">Library</button><button data-p="p1">Discover</button><button data-p="pc">Collections</button><button data-p="p2">Profile</button></nav>
+</div>
+<div id="rd" class="hide"><div id="view"></div><div id="zones"></div>
+<div class="tb" id="top"><button id="bk"><svg class="i"><use href="#i-left"/></svg></button><span class="t" id="rt"></span><button id="bm"><svg class="i"><use href="#i-bm"/></svg></button><button id="tc"><svg class="i"><use href="#i-list"/></svg></button></div>
+<div class="tb" id="bot"><button id="pv"><svg class="i"><use href="#i-left"/></svg></button><input type="range" id="sl" min="0" max="1000" value="0"><button id="nx"><svg class="i"><use href="#i-right"/></svg></button><span id="pc" style="font-size:12px;width:40px"></span></div>
+<div id="sheet"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/epub.js/0.3.93/epub.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>window.ICONS=["data:image/webp;base64,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", "data:image/webp;base64,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", "data:image/webp;base64,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", "data:image/webp;base64,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", "data:image/webp;base64,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", "data:image/webp;base64,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"];</script>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const TH={white:['#ffffff','#111111'],paper:['#f4ecd8','#3b3226'],sepia:['#e9d8b4','#4a3a22'],dark:['#1c1c22','#d6d6dc'],oled:['#000000','#bbbbbb'],midnight:['#0f1530','#c9d1f5']};
+let S={th:'midnight',ff:'Georgia,serif',fs:19,lh:16,md:'paginated',an:'slide',ic:4};
+try{Object.assign(S,JSON.parse(localStorage.getItem('ns')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('ns',JSON.stringify(S))}catch(e){}};
+/* storage */
+const dbp=new Promise(r=>{const q=indexedDB.open('novelle',1);q.onupgradeneeded=()=>q.result.createObjectStore('b',{keyPath:'id'});q.onsuccess=()=>r(q.result)});
+const tx=async(m,f)=>{const d=await dbp;return new Promise((res,rej)=>{const t=d.transaction('b',m),q=f(t.objectStore('b'));t.oncomplete=()=>res(q.result);t.onerror=()=>rej(t.error)})};
+const put=b=>tx('readwrite',s=>s.put(b)),all=()=>tx('readonly',s=>s.getAll()),del=id=>tx('readwrite',s=>s.delete(id));
+let books=[];
+/* helpers */
+const norm=s=>(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+function lev(a,b){const m=[];for(let i=0;i<=a.length;i++){m[i]=[i];}for(let j=0;j<=b.length;j++)m[0][j]=j;
+for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]==b[j-1]?0:1));return m[a.length][b.length]}
+function score(b,q){const hay=norm(b.title+' '+b.author+' '+(b.tags||'')),toks=hay.split(/[^a-z0-9\u0400-\u04ff]+/).filter(Boolean);let t=0;
+for(const w of norm(q).split(/\s+/).filter(Boolean)){let best=0;
+if(hay.includes(w))best=3;else for(const k of toks){if(k.startsWith(w.slice(0,Math.max(2,w.length-1))))best=Math.max(best,2);const d=lev(w,k.slice(0,w.length+1));if(d<=(w.length>4?2:1))best=Math.max(best,1.5)}
+if(!best)return 0;t+=best}return t}
+function thumb(src){return new Promise(r=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');c.width=240;c.height=Math.round(240*i.height/i.width);c.getContext('2d').drawImage(i,0,0,c.width,c.height);r(c.toDataURL('image/jpeg',.8))};i.onerror=()=>r(null);i.src=src})}
+function gen(t,a){const c=document.createElement('canvas');c.width=240;c.height=360;const x=c.getContext('2d'),g=x.createLinearGradient(0,0,240,360),h=[...t].reduce((s,ch)=>s+ch.charCodeAt(0),0)%360;
+g.addColorStop(0,`hsl(${h},55%,28%)`);g.addColorStop(1,`hsl(${(h+50)%360},60%,14%)`);x.fillStyle=g;x.fillRect(0,0,240,360);x.fillStyle='#fff';x.textAlign='center';x.font='bold 24px Georgia';
+let y=130,l='';for(const w of t.split(' ')){if(x.measureText(l+w).width>190){x.fillText(l,120,y);y+=30;l=''}l+=w+' '}x.fillText(l,120,y);x.font='15px Georgia';x.globalAlpha=.7;x.fillText(a||'',120,y+40);return c.toDataURL('image/jpeg',.8)}
+const blobUrl=u=>fetch(u).then(r=>r.blob()).then(b=>new Promise(r=>{const f=new FileReader;f.onload=()=>r(f.result);f.readAsDataURL(b)}));
+/* import */
+async function addFile(f){const fmt=f.name.split('.').pop().toLowerCase();if(!['epub','pdf','txt','html','htm'].includes(fmt))return 0;
+const id=f.name+'|'+f.size;if(books.some(b=>b.id==id))return 0;const data=await f.arrayBuffer();
+let title=f.name.replace(/\.[^.]+$/,''),author='',cover=null;
+try{if(fmt=='epub'){const bk=ePub(data.slice(0));await bk.ready;const m=await bk.loaded.metadata;title=m.title||title;author=m.creator||'';
+try{const u=await bk.coverUrl();if(u)cover=await thumb(await blobUrl(u))}catch(e){}bk.destroy()}
+else if(fmt=='pdf'){const d=await pdfjsLib.getDocument({data:data.slice(0)}).promise;try{const m=await d.getMetadata();title=m.info.Title||title;author=m.info.Author||''}catch(e){}
+const p=await d.getPage(1),v=p.getViewport({scale:1}),c=document.createElement('canvas'),s=240/v.width;c.width=240;c.height=v.height*s;
+await p.render({canvasContext:c.getContext('2d'),viewport:p.getViewport({scale:s})}).promise;cover=c.toDataURL('image/jpeg',.8)}}catch(e){console.warn(e)}
+const b={id,title,author,fmt,data,cover:cover||gen(title,author),added:Date.now(),opened:0,pct:0,loc:null,marks:[]};await put(b);books.push(b);return 1}
+async function importFiles(fl){let n=0;const bt=$('#imp');for(const f of fl){bt.textContent='Importing '+f.name.slice(0,18)+'…';try{n+=await addFile(f)}catch(e){}}bt.textContent=n?`Added ${n} book${n>1?'s':''}`:'+ Import books';setTimeout(()=>bt.textContent='+ Import books',2500);render()}
+$('#imp').onclick=()=>$('#fi').click();$('#impf').onclick=()=>$('#ff').click();
+$('#fi').onchange=e=>{importFiles(e.target.files);e.target.value=''};$('#ff').onchange=e=>{importFiles(e.target.files);e.target.value=''};
+/* library */
+let card=b=>`<div class="bk" data-id="${b.id.replace(/"/g,'&quot;')}"><img src="${b.cover}"><b>${esc(b.title)}</b><i>${esc(b.author)}</i><div class="bar"><u style="width:${Math.round(b.pct*100)}%"></u></div></div>`;
+const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function render(){const q=$('#q').value.trim(),so=$('#sort').value;let l=[...books];
+if(q){l=l.map(b=>[score(b,q),b]).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]).map(x=>x[1])}
+else l.sort((a,b)=>so=='title'||so=='author'?norm(a[so]).localeCompare(norm(b[so])):(b[so]||0)-(a[so]||0));
+$('#e0').hidden=books.length>0;$('#grid').innerHTML=l.map(card).join('');
+const cur=books.filter(b=>b.opened&&b.pct<.99).sort((a,b)=>b.opened-a.opened)[0];
+$('#hero').innerHTML=cur&&!q?`<div class="hero bk" data-id="${cur.id.replace(/"/g,'&quot;')}"><img src="${cur.cover}"><div><i>Continue reading</i><h3 style="margin:4px 0;font-family:Georgia">${esc(cur.title)}</h3><i>${esc(cur.author)}</i><div class="bar"><u style="width:${Math.round(cur.pct*100)}%"></u></div><br><button class="btn">Continue · ${Math.round(cur.pct*100)}%</button></div></div>`:'';
+disc();home();cols();prof()}
+function disc(){const read=books.filter(b=>b.pct>.05),au=new Set(read.map(b=>norm(b.author)).filter(Boolean));
+const next=books.filter(b=>b.pct<.05&&au.has(norm(b.author)));const gems=books.filter(b=>!b.opened).sort((a,b)=>a.added-b.added).slice(0,12);
+$('#disc').innerHTML=(next.length?`<h2>More from authors you read</h2><div class="grid">${next.map(card).join('')}</div>`:'')+(gems.length?`<h2>Unread in your library</h2><div class="grid">${gems.map(card).join('')}</div>`:'')+(books.length?'':'<div class="empty">Import some books and Novelle will recommend your next read from your own library. Nothing leaves your device.</div>')}
+document.addEventListener('click',e=>{const b=e.target.closest('.bk');if(b&&!$('#rd.on'))open(b.dataset.id)});
+$('#q').oninput=render;$('#sort').onchange=render;
+$$('nav button').forEach(b=>b.onclick=()=>{$$('nav button').forEach(x=>x.classList.toggle('on',x==b));$$('.pg').forEach(p=>p.classList.toggle('on',p.id==b.dataset.p))});
+/* reader */
+let cur,bk,rend,pdf,pn=1,locs=false;const view=$('#view');
+const th=()=>TH[S.th];
+function applyTheme(){const[bg,fg]=th();$('#rd').style.cssText=`background:${bg};color:${fg}`;view.style.background=bg;
+if(cur&&cur.fmt=='txt'||cur&&cur.fmt=='html'){const t=$('#txt');if(t)t.style.cssText+=`;color:${fg};background:${bg};font:${S.fs}px/${S.lh/10} ${S.ff}`}
+if(rend){rend.themes.register('n',{body:{color:fg+' !important',background:bg+' !important','font-family':S.ff+' !important','line-height':(S.lh/10)+' !important'},'p,span,div,li':{color:fg+' !important'},a:{color:'#a67bff !important'}});rend.themes.select('n');rend.themes.fontSize(S.fs+'px')}
+if(pdf)pdfShow(pn)}
+async function open(id){cur=books.find(b=>b.id==id);if(!cur)return;cur.opened=Date.now();put(cur);{const dy=new Date().toDateString();S.days=S.days||[];if(!S.days.includes(dy)){S.days.push(dy);S.days=S.days.slice(-400);save()}}$('#rd').className='on hide';$('#rt').textContent=cur.title;view.innerHTML='';rend=bk=pdf=null;locs=false;$('#pc').textContent='';
+try{if(cur.fmt=='epub'){bk=ePub(cur.data.slice(0));rend=bk.renderTo(view,{width:'100%',height:'100%',flow:S.md,spread:'none'});applyTheme();
+rend.on('relocated',l=>{cur.loc=l.start.cfi;if(locs){cur.pct=bk.locations.percentageFromCfi(l.start.cfi);$('#sl').value=cur.pct*1000;$('#pc').textContent=Math.round(cur.pct*100)+'%'}put(cur)});
+await rend.display(cur.loc||undefined);bk.ready.then(()=>bk.locations.generate(1200)).then(()=>{locs=true;cur.pct=cur.loc?bk.locations.percentageFromCfi(cur.loc):0;$('#sl').value=cur.pct*1000;$('#pc').textContent=Math.round(cur.pct*100)+'%'})}
+else if(cur.fmt=='pdf'){pdf=await pdfjsLib.getDocument({data:cur.data.slice(0)}).promise;pn=cur.loc||1;view.innerHTML='<div style="position:absolute;inset:0;overflow:auto;padding:60px 0"><canvas id=cv></canvas></div>';$('#sl').max=pdf.numPages;pdfShow(pn)}
+else{const t=new TextDecoder().decode(cur.data);view.innerHTML='<div id=txt></div>';const el=$('#txt');if(cur.fmt=='txt')el.textContent=t;else{el.style.whiteSpace='normal';el.innerHTML=new DOMParser().parseFromString(t,'text/html').body.innerHTML}
+applyTheme();el.scrollTop=(cur.loc||0);el.onscroll=()=>{cur.pct=el.scrollTop/Math.max(1,el.scrollHeight-el.clientHeight);cur.loc=el.scrollTop;$('#sl').value=cur.pct*1000;$('#pc').textContent=Math.round(cur.pct*100)+'%'}}}
+catch(e){view.innerHTML='<p style="padding:80px 24px">Could not open this file: '+esc(String(e))+'</p>'}
+applyTheme()}
+async function pdfShow(n){const p=await pdf.getPage(n),c=$('#cv');if(!c)return;const w=view.clientWidth,v=p.getViewport({scale:1}),s=Math.min(w/v.width,2)*devicePixelRatio,vp=p.getViewport({scale:s});
+c.width=vp.width;c.height=vp.height;c.style.width=vp.width/devicePixelRatio+'px';await p.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+const d=['dark','oled','midnight'].includes(S.th);c.style.filter=d?'invert(.9) hue-rotate(180deg)':S.th=='white'?'':'sepia(.25)';
+cur.loc=n;cur.pct=n/pdf.numPages;$('#sl').value=n;$('#pc').textContent=n+'/'+pdf.numPages;put(cur)}
+const ANI={slide:d=>[{transform:`translateX(${d*40}px)`,opacity:.2},{transform:'none',opacity:1}],fade:()=>[{opacity:0},{opacity:1}],flip:d=>[{transform:`perspective(900px) rotateY(${d*-40}deg)`,transformOrigin:d>0?'left':'right',opacity:.3},{transform:'none',opacity:1}]};
+async function go(d){const a=ANI[S.an];
+if(rend){d>0?await rend.next():await rend.prev()}
+else if(pdf){const n=Math.min(pdf.numPages,Math.max(1,pn+d));if(n==pn)return;pn=n;await pdfShow(n)}
+else{const t=$('#txt');t.scrollBy({top:d*t.clientHeight*.9,behavior:'smooth'});return}
+if(a&&S.md=='paginated'||pdf&&a)view.animate(a(d),{duration:260,easing:'ease-out'})}
+let tx0=0,ty0=0,tt=0;const z=$('#zones');
+z.addEventListener('touchstart',e=>{tx0=e.touches[0].clientX;ty0=e.touches[0].clientY;tt=Date.now()},{passive:true});
+z.addEventListener('touchend',e=>{const t=e.changedTouches[0],dx=t.clientX-tx0,dy=t.clientY-ty0;e.preventDefault();
+if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){go(dx<0?1:-1)}else if(Math.abs(dy)<12&&Date.now()-tt<500)tap(t.clientX)});
+z.onclick=e=>{if(e.pointerType!='touch'&&e.detail)tap(e.clientX)};
+function tap(x){const w=innerWidth;if(x<w*.28)go(-1);else if(x>w*.72)go(1);else $('#rd').classList.toggle('hide')}
+$('#pv').onclick=()=>go(-1);$('#nx').onclick=()=>go(1);
+$('#sl').oninput=e=>{const v=+e.target.value;if(bk&&locs)rend.display(bk.locations.cfiFromPercentage(v/1000));else if(pdf){pn=v;pdfShow(v)}else if($('#txt')){const t=$('#txt');t.scrollTop=v/1000*(t.scrollHeight-t.clientHeight)}};
+$('#bk').onclick=()=>{$('#rd').className='';$('#sheet').className='';try{rend&&rend.destroy();bk&&bk.destroy()}catch(e){}rend=bk=pdf=null;view.innerHTML='';render()};
+const sh=$('#sheet');
+$('#tc').onclick=async()=>{let items=[];
+if(bk){await bk.loaded.navigation;const f=(l,d=0)=>l.forEach(c=>{items.push([c.label.trim(),()=>rend.display(c.href),d]);f(c.subitems||[],d+1)});f(bk.navigation.toc)}
+else if(pdf){const o=await pdf.getOutline()||[];for(const c of o){try{const d=typeof c.dest=='string'?await pdf.getDestination(c.dest):c.dest;const i=await pdf.getPageIndex(d[0]);items.push([c.title,()=>{pn=i+1;pdfShow(pn)},0])}catch(e){}}}
+sh.innerHTML='<h2>Contents</h2>'+(items.length?'':'<div class="empty">No table of contents found in this book.</div>')+`<h2>Bookmarks</h2><div id=bms></div>`;
+items.forEach(([t,fn,d])=>{const e=document.createElement('div');e.className='it';e.style.paddingLeft=d*18+4+'px';e.textContent=t;e.onclick=()=>{fn();sh.className=''};sh.insertBefore(e,$('#bms').previousSibling)});
+const bm=cur.marks||[];$('#bms').innerHTML=bm.length?'':'<div class="empty">No bookmarks yet. Tap the bookmark button to add one.</div>';
+bm.forEach((m,i)=>{const e=document.createElement('div');e.className='it';e.innerHTML=ico('bm')+' '+m.t+'  ·  '+new Date(m.d).toLocaleDateString();e.onclick=()=>{go2(m.l);sh.className=''};e.oncontextmenu=ev=>{ev.preventDefault();cur.marks.splice(i,1);put(cur);e.remove()};$('#bms').append(e)});
+sh.className='on'};
+function go2(l){if(rend)rend.display(l);else if(pdf){pn=l;pdfShow(l)}else $('#txt').scrollTop=l}
+$('#bm').onclick=()=>{const l=cur.loc;if(l==null)return;(cur.marks=cur.marks||[]).push({l,d:Date.now(),t:cur.fmt=='epub'?Math.round(cur.pct*100)+'%':cur.fmt=='pdf'?'Page '+pn:Math.round(cur.pct*100)+'%'});put(cur);$('#bm').innerHTML=ico('check');setTimeout(()=>$('#bm').innerHTML=ico('bm'),900)};
+view.addEventListener('click',()=>{sh.className=''});z.addEventListener('touchstart',()=>{sh.className=''},{passive:true});
+/* settings */
+$('#sw').innerHTML=Object.keys(TH).map(k=>`<div data-k="${k}" style="background:${TH[k][0]};color:${TH[k][1]}">Aa</div>`).join('');
+const sync=()=>{$$('#sw div').forEach(d=>d.classList.toggle('on',d.dataset.k==S.th));$('#ff2').value=S.ff;$('#fs').value=S.fs;$('#lh').value=S.lh;$('#md').value=S.md;$('#an').value=S.an;
+$$('#ics img').forEach((m,i)=>m.classList.toggle('on',i==S.ic));$('#logo').src=ICONS[S.ic];
+let l=document.querySelector('link[rel=icon]')||document.head.appendChild(Object.assign(document.createElement('link'),{rel:'icon'}));l.href=ICONS[S.ic];
+let a=document.querySelector('link[rel=apple-touch-icon]')||document.head.appendChild(Object.assign(document.createElement('link'),{rel:'apple-touch-icon'}));a.href=ICONS[S.ic]};
+$('#ics').innerHTML=ICONS.map((s,i)=>`<img src="${s}" data-i="${i}">`).join('');
+$('#ics').onclick=e=>{if(e.target.dataset.i){S.ic=+e.target.dataset.i;save();sync()}};
+$('#sw').onclick=e=>{if(e.target.dataset.k){S.th=e.target.dataset.k;save();sync();applyTheme()}};
+[['ff2','ff'],['fs','fs'],['lh','lh'],['md','md'],['an','an']].forEach(([i,k])=>$('#'+i).oninput=e=>{S[k]=['fs','lh'].includes(k)?+e.target.value:e.target.value;save();applyTheme()});
+$('#md').onchange=()=>{if(cur&&$('#rd.on'))open(cur.id)};
+$('#wipe').onclick=async()=>{if(confirm('Delete every book and its progress from this device?')){for(const b of books)await del(b.id);books=[];render()}};
+let C={};try{C=JSON.parse(localStorage.getItem('nc')||'{}')}catch(e){}
+const sc=()=>{try{localStorage.setItem('nc',JSON.stringify(C))}catch(e){}};
+const hsOn=k=>!(S.hs&&S.hs[k]===0);
+const row=l=>`<div class="hs">${l.map(card).join('')}</div>`;
+function home(){const h=new Date().getHours(),g=h<5||h>=18?'Good evening,':h<12?'Good morning,':'Good afternoon,';
+const c=books.filter(b=>b.opened&&b.pct<.99).sort((a,b)=>b.opened-a.opened)[0],n=f=>books.filter(f).length;
+const au=new Set(books.filter(b=>b.pct>.05).map(b=>norm(b.author)).filter(Boolean)),un=books.filter(b=>!b.opened);
+const rec=[...un.filter(b=>au.has(norm(b.author))),...un.filter(b=>!au.has(norm(b.author)))].slice(0,12);
+let o=`<div style="padding:20px 16px;margin:-14px -16px 0;background:radial-gradient(at 85% 0,#8b4bff66,transparent 65%)"><small style="color:var(--mut)">${g}</small><h1 style="margin:0">Reader</h1></div>`;
+if(hsOn('cont')&&c)o+=`<h2>Continue Reading</h2><div class="hero bk" data-id="${esc(c.id)}"><img src="${c.cover}"><div><h3 style="margin:4px 0;font-family:Georgia">${esc(c.title)}</h3><i>${esc(c.author)}</i><div class="bar"><u style="width:${Math.round(c.pct*100)}%"></u></div><br><button class="btn">${Math.round(c.pct*100)}%</button></div></div>`;
+if(hsOn('stats'))o+=`<div class="stats"><div><b>${books.length}</b><small>Books</small></div><div><b>${n(b=>b.opened&&b.pct>0&&b.pct<.99)}</b><small>Reading</small></div><div><b>${n(b=>b.pct>=.99)}</b><small>Completed</small></div><div><b>${un.length}</b><small>To Read</small></div></div>`;
+if(hsOn('rec')&&rec.length)o+=`<h2>Recommended For You</h2>`+row(rec);
+if(hsOn('recent')&&books.length)o+=`<h2>Recently Added</h2>`+row([...books].sort((a,b)=>b.added-a.added).slice(0,12));
+if(hsOn('cols')&&Object.keys(C).length)o+=`<h2>Your Collections</h2>`+Object.keys(C).map(k=>`<span class="chip">${esc(k)} · ${C[k].length}</span>`).join('');
+if(!books.length)o+='<div class="empty">Your shelf is empty. Open Library and import your first book.</div>';
+$('#home').innerHTML=o}
+function cols(){$('#cl').innerHTML=Object.keys(C).map(k=>`<details><summary><b>${esc(k)}</b> · ${C[k].length} books</summary><div class="grid">${C[k].map(id=>books.find(b=>b.id==id)).filter(Boolean).map(card).join('')}</div><h2>Add / remove books</h2>${books.map(b=>`<label class="row"><span>${esc(b.title)}</span><input type="checkbox" data-c="${esc(k)}" data-id="${esc(b.id)}" ${C[k].includes(b.id)?'checked':''}></label>`).join('')}<button class="ghost" data-del="${esc(k)}">Delete collection</button></details>`).join('')||'<div class="empty">Group books into collections like “Summer Reading”. A book can live in several.</div>'}
+$('#cadd').onclick=()=>{const n=$('#cname').value.trim();if(n&&!C[n]){C[n]=[];sc();$('#cname').value='';cols();home()}};
+$('#cl').onchange=e=>{const t=e.target,k=t.dataset.c;if(!k)return;const s=new Set(C[k]);t.checked?s.add(t.dataset.id):s.delete(t.dataset.id);C[k]=[...s];sc();home()};
+$('#cl').onclick=e=>{const k=e.target.dataset.del;if(k&&confirm('Delete collection “'+k+'”? Books stay in your library.')){delete C[k];sc();cols();home()}};
+function prof(){const d=new Set(S.days||[]);let st=0,x=new Date();if(!d.has(x.toDateString()))x.setDate(x.getDate()-1);while(d.has(x.toDateString())){st++;x.setDate(x.getDate()-1)}
+const dn=books.filter(b=>b.pct>=.99).length,gl=S.goal||12;
+$('#prof').innerHTML=`<div class="stats"><div><b>${books.length}</b><small>Books</small></div><div><b>${dn}</b><small>Completed</small></div><div><b>${st}</b><small>Day streak</small></div></div><div class="row">Yearly goal (books)<input type="number" id="gl" min="1" value="${gl}"></div><div class="bar" style="height:8px"><u style="width:${Math.min(100,dn/gl*100)}%"></u></div><small style="color:var(--mut)">${dn} of ${gl} books finished</small><h2>Home sections</h2>`+[['cont','Continue reading'],['stats','Library stats'],['rec','Recommended'],['recent','Recently added'],['cols','Collections']].map(([k,t])=>`<label class="row">${t}<input type="checkbox" data-hs="${k}" ${hsOn(k)?'checked':''}></label>`).join('')}
+$('#prof').onchange=e=>{const t=e.target;if(t.id=='gl'){S.goal=Math.max(1,+t.value||12);save();prof()}else if(t.dataset.hs){S.hs=S.hs||{};S.hs[t.dataset.hs]=t.checked?1:0;save();home()}};
+sync();all().then(r=>{books=r;render()});
+if('serviceWorker' in navigator){}
+</script><style>
+:root,:root:not([data-theme=dark]){--bg:#0b0615;--bg2:#1a1030;--fg:#f4eeff;--mut:#a597cf;--ac:#a66bff}
+body{background:radial-gradient(120% 55% at 50% 0,#2a1250,#0b0615 62%) #0b0615}
+h1{font:600 28px Georgia,serif}
+.card{background:linear-gradient(160deg,#261048cc,#150a2acc);border:1px solid #a66bff40;border-radius:20px;box-shadow:0 0 24px #7a3fd122}
+.btn,.play{background:linear-gradient(90deg,#8a4dff,#c04fe0);border-radius:999px;box-shadow:0 6px 20px #8a4dff55;border:0;color:#fff;font-weight:600}
+.btn{padding:13px 18px}.play{width:44px;height:44px;align-self:center;font-size:15px}
+.top{display:flex;justify-content:space-between;align-items:center}.ib{background:none;border:0;width:40px;height:40px;border-radius:12px;font-size:19px}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:14px 0 4px}.chip2{flex:none;padding:8px 16px;border-radius:999px;background:#1d1138;border:1px solid #a66bff33;color:var(--fg);font-size:13px;display:inline-block}.chip2.on{background:linear-gradient(90deg,#8a4dff,#b04df0);border-color:transparent}
+nav{border-top:1px solid #a66bff22;background:#0f0820f2;backdrop-filter:blur(14px);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{padding:7px 0 5px;border-radius:14px;margin:0 3px}nav button.on{background:#a66bff29;color:#cdb0ff}
+nav svg,.ti svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block;margin:0 auto 3px}
+.grid{grid-template-columns:repeat(3,1fr);gap:16px 12px}.bk img{border-radius:10px}.bk .t b{font-size:12px}.bk .t i{display:block;margin-top:2px}
+.grid.list{grid-template-columns:1fr}.grid.list .bk{display:flex;gap:14px;align-items:center}.grid.list .bk img{width:64px}.grid.list .t{flex:1}
+.fab{position:fixed;right:18px;bottom:calc(88px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;font-size:28px;background:linear-gradient(135deg,#8a4dff,#c04fe0);border:0;color:#fff;box-shadow:0 8px 24px #8a4dff88;z-index:4}
+.banner{margin:-14px -16px 0;padding:26px 18px 70px;background:radial-gradient(circle at 84% 78%,#ffc08a 0 5%,transparent 6%),linear-gradient(180deg,#0b0615,#3a1a6e 55%,#c85a7a)}.banner h1{margin:2px 0 0;font-size:32px}.banner small{opacity:.85}
+.up{margin-top:-46px;position:relative}.cr{padding:14px}.cr img{width:78px;border-radius:8px;aspect-ratio:2/3;object-fit:cover}.cl{font:600 17px Georgia;display:block;margin-bottom:10px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.tiles .card{padding:12px 2px;text-align:center}.tiles b{display:block;font-size:17px}.tiles small{color:var(--mut);font-size:11px}
+.sa{float:right;font:12px system-ui;color:#c9a8ff;text-transform:none;letter-spacing:0}.h2b{font:600 18px Georgia;color:var(--fg);text-transform:none;letter-spacing:0;margin:22px 0 10px}
+.sbar{display:flex;gap:8px;align-items:center;background:#1d1138;border:1px solid #a66bff33;border-radius:14px;padding:0 14px;margin:14px 0}.sbar input{background:none;padding:13px 0}
+.cats{display:flex;gap:14px;overflow-x:auto}.cats div{flex:none;text-align:center;font-size:11px;color:var(--mut)}.cats span{display:grid;place-items:center;width:56px;height:56px;border-radius:50%;border:1px solid #a66bff55;font-size:22px;margin-bottom:6px}
+.ct{display:grid;grid-template-columns:1fr 1fr;gap:12px}.ct div{height:70px;border-radius:16px;display:grid;place-items:center;font:600 18px Georgia}
+#toast{position:fixed;left:50%;bottom:110px;transform:translate(-50%,20px);background:#2a1a4e;padding:10px 18px;border-radius:20px;opacity:0;transition:.25s;z-index:99;pointer-events:none}#toast.on{opacity:1;transform:translate(-50%,0)}
+#sub{position:fixed;inset:0;z-index:8;background:var(--bg);display:none;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}#sub.on{display:flex}
+.sh{display:flex;align-items:center;padding:8px 10px}.sh b{flex:1;text-align:center;font-size:17px}#sbody{flex:1;overflow:auto;padding:8px 16px 40px}
+.mi{display:flex;align-items:center;gap:14px;padding:14px;margin-top:10px}.mi div{flex:1}.mi small{display:block;color:var(--mut);margin-top:2px}.mic{width:38px;height:38px;border-radius:12px;background:#a66bff26;display:grid;place-items:center}
+.pf{display:flex;gap:14px;align-items:center;padding:16px;margin:12px 0}.av{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#8a4dff,#ff9a6b);display:grid;place-items:center;font:600 22px Georgia}
+.tabs{display:flex;border-bottom:1px solid #a66bff22;margin:10px 0}.tabs span{flex:1;text-align:center;padding:11px 0;color:var(--mut);border-bottom:2px solid transparent}.tabs span.on{color:var(--fg);border-color:var(--ac)}
+.dh{display:flex;gap:16px}.dh img{width:120px;border-radius:12px;aspect-ratio:2/3;object-fit:cover;box-shadow:0 10px 30px #0008}.dh h2{font:600 24px Georgia;margin:6px 0}
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tg div{border-radius:14px;padding:14px 0;text-align:center;font:600 20px Georgia;border:2px solid transparent}.tg small{display:block;font:11px system-ui;margin-top:4px}.tg .on{border-color:var(--ac);box-shadow:0 0 14px var(--ac)}
+.sw div{width:38px;height:38px}.sw .on{box-shadow:0 0 0 2px var(--bg),0 0 0 4px #fff}
+.step{display:flex;align-items:center;gap:14px}.step button{width:34px;height:34px;border-radius:50%;border:0;background:#a66bff33;font-size:18px}
+.chart{display:flex;align-items:flex-end;gap:3px;height:110px;margin-bottom:6px}.chart i{flex:1;background:linear-gradient(#c04fe0,#6d3bd6);border-radius:2px 2px 0 0}
+.sk{display:flex;gap:14px;align-items:center;padding:14px;margin:12px 0;font-size:24px}.sk b{font-size:15px}
+#bot{flex-wrap:wrap;gap:4px 8px}#pv,#nx{display:none}#pc{order:-1;width:100%!important;text-align:center;font-size:12px!important;opacity:.8}#sl{flex:1 1 100%;accent-color:var(--ac)}#qa{order:5;flex:1 1 100%;display:flex;justify-content:space-around}#qa button{font-size:18px;padding:8px 18px}
+#sp{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;background:radial-gradient(circle at 80% 16%,#ffe0b8 0 2.5%,#ffb27a55 3%,transparent 12%),linear-gradient(180deg,#12062a,#3a1a6e 60%,#c85a7a 90%)}
+#sp svg{position:absolute;bottom:0;left:0;width:100%;height:38%}#sp>*:not(svg){position:relative}#sp img{width:96px;border-radius:24px;box-shadow:0 0 40px #a66bff}#sp h1{font-size:46px;margin:16px 0 6px}#sp p{margin:0 0 150px;line-height:1.5;opacity:.9}#sp .btn{width:100%;max-width:340px}
+</style>
+<script>function ico(n){return '<svg class="i"><use href="#i-'+n+'"/></svg>'}</script>
+<div id="sub"><div class="sh"><button class="ib" id="sback"><svg class="i"><use href="#i-left"/></svg></button><b id="stl"></b><span style="width:40px"></span></div><div id="sbody"></div></div>
+<div id="toast"></div>
+<div id="sp"><svg viewBox="0 0 400 150" preserveAspectRatio="none"><path d="M0 150V80l50-40 40 35 60-50 60 55 50-30 70 45 70-35v90z" fill="#1c0b3a"/><path d="M0 150V110l70-30 60 30 70-25 80 30 120-35v70z" fill="#0f0624"/></svg>
+<img id="spl"><h1>Novelle</h1><p>Your books. Your space.<br>Your way.</p><button class="btn" id="gs">Get Started <svg class="i"><use href="#i-right"/></svg></button><small id="lg" style="margin-top:16px">Already have an account? <u>Log in</u></small></div>
+<script>
+const IC={home:'<path d="M3 11l9-8 9 8v10H3z"/>',lib:'<path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z"/>',dis:'<circle cx="12" cy="12" r="9"/><path d="M15 9l-2 5-5 2 2-5z"/>',col:'<path d="M12 3l9 5-9 5-9-5zM3 13l9 5 9-5"/>',pro:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',heart:'<path d="M12 21s-8-5.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.5-8 11-8 11z"/>',ok:'<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>',bm:'<path d="M6 3h12v18l-6-4-6 4z"/>'};
+const svg=(k,c)=>`<svg viewBox="0 0 24 24"${c?` style="stroke:${c}"`:''}>${IC[k]}</svg>`;
+function toast(t){const e=$('#toast');e.textContent=t;e.className='on';clearTimeout(toast.t);toast.t=setTimeout(()=>e.className='',2300)}
+function showPg(id){$$('.pg').forEach(p=>p.classList.toggle('on',p.id==id));$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.p==id));$('#sub').className=''}
+$('nav').innerHTML=[['ph','home','Home'],['p0','lib','Library'],['p1','dis','Discover'],['pc','col','Collections'],['p2','pro','Profile']].map(([i,k,t])=>`<button data-p="${i}">${svg(k)}${t}</button>`).join('');
+$$('nav button').forEach(b=>b.onclick=()=>showPg(b.dataset.p));
+const sub=(t,h,keep)=>{const y=$('#sbody').scrollTop;$('#stl').textContent=t;$('#sbody').innerHTML=h;$('#sub').className='on';$('#sbody').scrollTop=keep?y:0};
+$('#sback').onclick=()=>$('#sub').className='';
+if(!localStorage.getItem('ns')){S.th='paper';save()}
+if(S.acc)document.documentElement.style.setProperty('--ac',S.acc);
+function applyIcon(){const u=ICONS[S.ic];for(const r of['icon','apple-touch-icon']){let l=document.querySelector(`link[rel=${r}]`);if(!l){l=document.createElement('link');l.rel=r;document.head.append(l)}l.href=u}$('#spl').src=u}applyIcon();
+/* splash */
+if(localStorage.getItem('nsp'))$('#sp').remove();else{$('#gs').onclick=()=>{try{localStorage.setItem('nsp',1)}catch(e){}$('#sp').remove()};$('#lg').onclick=()=>toast('Accounts arrive with cloud sync. Novelle works fully without one.')}
+/* library */
+let LF='all';
+card=b=>`<div class="bk" data-id="${esc(b.id)}"><img src="${b.cover}"><div class="t"><b>${esc(b.title)}</b><i>${esc(b.author)}</i><div class="bar"><u style="width:${Math.round(b.pct*100)}%"></u></div></div></div>`;
+$('#p0').innerHTML=`<div class="top"><div><h1 style="margin:0">Library</h1><small id="lc" style="color:var(--mut)"></small></div><div><button class="ib" id="sb"><svg class="i"><use href="#i-search"/></svg></button></div></div>
+<input type="search" id="q" placeholder="Search title, author…" hidden style="margin-top:10px">
+<div class="chips" id="chips">${[['all','All'],['reading','Reading'],['done','Completed'],['unread','Unread']].map(([k,t])=>`<span class="chip2${k=='all'?' on':''}" data-f="${k}">${t}</span>`).join('')}<select id="sort" class="chip2"><option value="opened">Last opened</option><option value="added">Date added</option><option value="title">Title</option><option value="author">Author</option><option value="pct">Progress</option></select></div>
+<div id="hero" hidden></div><div class="grid" id="grid"></div><div class="empty" id="e0">No books yet. Tap the plus button to import EPUB, PDF or TXT files.<br><br><button class="ghost" id="impf">Import a folder</button></div>
+<button class="fab" id="imp"><svg class="i"><use href="#i-plus"/></svg></button><input type="file" id="fi" multiple accept=".epub,.pdf,.txt,.html,.htm" hidden><input type="file" id="ff" webkitdirectory multiple hidden>`;
+$('#imp').onclick=()=>$('#fi').click();$('#impf').onclick=()=>$('#ff').click();
+$('#fi').onchange=e=>{importFiles(e.target.files);e.target.value=''};$('#ff').onchange=e=>{importFiles(e.target.files);e.target.value=''};
+$('#q').oninput=render;$('#sort').onchange=render;$('#sb').onclick=()=>{$('#q').hidden=!$('#q').hidden;$('#q').focus()};
+$('#chips').onclick=e=>{const f=e.target.dataset.f;if(!f)return;LF=f;$$('#chips .chip2[data-f]').forEach(c=>c.classList.toggle('on',c.dataset.f==f));render()};
+async function importFiles(fl){let n=0;toast('Importing…');for(const f of fl){try{n+=await addFile(f)}catch(e){}}toast(n?`Added ${n} book${n>1?'s':''}`:'No new books added');render()}
+function render(){const q=($('#q').value||'').trim(),so=$('#sort').value;let l=[...books];
+if(q)l=l.map(b=>[score(b,q),b]).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]).map(x=>x[1]);
+else l.sort((a,b)=>so=='title'||so=='author'?norm(a[so]).localeCompare(norm(b[so])):(b[so]||0)-(a[so]||0));
+l=l.filter(b=>LF=='all'||LF=='reading'&&b.opened&&b.pct>0&&b.pct<.99||LF=='done'&&b.pct>=.99||LF=='unread'&&!b.opened);
+$('#lc').textContent=books.length.toLocaleString()+' books';$('#e0').hidden=books.length>0;$('#grid').innerHTML=l.map(card).join('');home();disc();cols();prof()}
+function go2lib(t){$('#q').value=t;$('#q').hidden=false;showPg('p0');render()}
+/* home */
+const hrow=l=>`<div class="hs">${l.map(card).join('')}</div>`;
+$('#ph').innerHTML='<div id="home"></div>';
+$('#ph').onclick=e=>{const g=e.target.dataset.go;if(g)showPg(g)};
+function home(){const h=new Date().getHours(),g=h<5||h>=18?'Good evening,':h<12?'Good morning,':'Good afternoon,',c=books.filter(b=>b.opened&&b.pct<.99).sort((a,b)=>b.opened-a.opened)[0],n=f=>books.filter(f).length,un=books.filter(b=>!b.opened);
+const au=new Set(books.filter(b=>b.pct>.05).map(b=>norm(b.author)).filter(Boolean)),rec=[...un.filter(b=>au.has(norm(b.author))),...un.filter(b=>!au.has(norm(b.author)))].slice(0,12);
+const T=(k,c,v,l)=>`<div class="card"><span class="ti">${svg(k,c)}</span><b>${v}</b><small>${l}</small></div>`;
+let o=`<div class="banner"><small>${g}</small><h1>Reader</h1></div><div class="up">`;
+if(hsOn('cont')&&c)o+=`<div class="card cr bk" data-id="${esc(c.id)}"><b class="cl">Continue Reading</b><div style="display:flex;gap:14px"><img src="${c.cover}"><div style="flex:1;min-width:0"><b style="font:600 18px Georgia">${esc(c.title)}</b><br><small style="color:var(--mut)">${esc(c.author)}</small><br><small>${Math.round(c.pct*100)}% complete</small><div class="bar"><u style="width:${Math.round(c.pct*100)}%"></u></div></div><button class="play">${ico('play')}</button></div></div>`;
+if(hsOn('stats'))o+=`<div class="tiles">${T('lib','#5aa0ff',books.length,'Library')}${T('heart','#ff6fae',n(b=>b.opened&&b.pct>0&&b.pct<.99),'Reading')}${T('ok','#3ed6a0',n(b=>b.pct>=.99),'Completed')}${T('bm','#ffb02e',un.length,'To Read')}</div>`;
+if(hsOn('rec')&&rec.length)o+=`<h2 class="h2b">Recommended For You<span class="sa" data-go="p1">See all <svg class="i"><use href="#i-right"/></svg></span></h2>`+hrow(rec);
+if(hsOn('recent')&&books.length)o+=`<h2 class="h2b">Recently Added</h2>`+hrow([...books].sort((a,b)=>b.added-a.added).slice(0,12));
+if(hsOn('cols')&&Object.keys(C).length)o+=`<h2 class="h2b">Your Collections</h2>`+Object.keys(C).map(k=>`<span class="chip2" style="margin:0 8px 8px 0">${esc(k)} · ${C[k].length}</span>`).join('');
+if(!books.length)o+='<div class="empty">Your shelf is empty.<br>Open Library and tap the plus button to add your first book.</div>';
+$('#home').innerHTML=o+'</div>'}
+/* discover */
+const CATS=[['Fantasy','#6d5bff','wand'],['History','#e0a23a','landmark'],['Psychology','#c04fe0','brain'],['Philosophy','#8a6dff','bulb'],['Sci-Fi','#3aa0ff','planet']];
+$('#p1').innerHTML=`<div class="top"><div><h1 style="margin:0">Discover</h1><small style="color:var(--mut)">Find your next great read</small></div></div><div class="sbar"><span><svg class="i"><use href="#i-search"/></svg></span><input id="dq" type="search" placeholder="Search books, authors, genres…"></div><div class="cats">${CATS.map(([n,c,i])=>`<div data-cat="${n}"><span style="background:radial-gradient(circle at 30% 30%,${c}bb,#1d1138)">${ico(i)}</span>${n}</div>`).join('')}</div><div id="dl"></div>`;
+$('#dq').onkeydown=e=>{if(e.key=='Enter')go2lib(e.target.value)};$('#p1').onclick=e=>{const c=e.target.closest('[data-cat]');if(c)go2lib(c.dataset.cat)};
+function disc(){const r=books.filter(b=>b.pct>.05).sort((a,b)=>b.opened-a.opened)[0];let o='';const sa=(x,y)=>norm(x.author)==norm(y.author);
+if(r){const s=books.filter(b=>b.id!=r.id&&(!b.opened||sa(b,r))).sort((a,b)=>sa(b,r)-sa(a,r)).slice(0,12);if(s.length)o+=`<h2 class="h2b">Because You Read<br>${esc(r.title)}</h2>`+hrow(s)}
+const un=books.filter(b=>!b.opened).slice(0,12);if(un.length)o+=`<h2 class="h2b">Unread In Your Library</h2>`+hrow(un);
+o+=`<h2 class="h2b">Explore Categories</h2><div class="ct"><div data-cat="Classics" style="background:linear-gradient(120deg,#2b3a6e,#5a4a8e)">Classics</div><div data-cat="Fiction" style="background:linear-gradient(120deg,#7a2a4a,#c04f6a)">Fiction</div></div>`;
+if(!books.length)o='<div class="empty">Import books and Novelle will recommend from your own library. Nothing leaves your device.</div>'+o;$('#dl').innerHTML=o}
+/* detail */
+let DB;
+document.addEventListener('click',e=>{if($('#rd.on'))return;const b=e.target.closest('.bk');if(!b)return;e.stopImmediatePropagation();if(e.target.closest('.play'))open(b.dataset.id);else detail(b.dataset.id)},true);
+function detail(id){const b=books.find(x=>x.id==id);if(!b)return;DB=b;
+sub('',`<div class="dh"><img src="${b.cover}"><div><h2>${esc(b.title)}</h2><div style="color:var(--mut)">${esc(b.author||'Unknown author')}</div><div style="margin-top:12px"><span class="chip2">${b.fmt.toUpperCase()}</span> <span class="chip2">${(b.data.byteLength/1048576).toFixed(1)} MB</span></div></div></div><div style="margin:18px 0"><button class="btn" id="rb" style="width:100%">${ico('play')} ${b.opened?'Continue':'Read'}</button></div><div class="tabs" id="dt">${['about','chapters','notes','stats'].map(t=>`<span data-dt="${t}">${t[0].toUpperCase()+t.slice(1)}</span>`).join('')}</div><div id="dc"></div>`);
+$('#rb').onclick=()=>open(b.id);dtab('about')}
+async function dtab(t){const b=DB;$$('#dt span').forEach(s=>s.classList.toggle('on',s.dataset.dt==t));const c=$('#dc');
+if(t=='about')c.innerHTML=[['Format',b.fmt.toUpperCase()],['Progress',Math.round(b.pct*100)+'%'],['Added',new Date(b.added).toLocaleDateString()],['Last opened',b.opened?new Date(b.opened).toLocaleDateString():'Never']].map(([k,v])=>`<div class="row"><span style="color:var(--mut)">${k}</span><b>${v}</b></div>`).join('')+`<button class="ghost" data-rm="1" style="margin-top:14px">Remove from library</button>`;
+else if(t=='chapters'){c.innerHTML='<div class="empty">Loading…</div>';let l=[];try{if(b.fmt=='epub'){const k=ePub(b.data.slice(0));await k.loaded.navigation;l=k.navigation.toc.map(x=>[x.label.trim(),x.href]);k.destroy()}}catch(e){}
+c.innerHTML=l.length?l.map(([n,h])=>`<div class="it" data-h="${esc(h)}" style="padding:12px 4px;border-bottom:1px solid #8883">${esc(n)}</div>`).join(''):'<div class="empty">No chapter list found for this file.</div>'}
+else if(t=='notes')c.innerHTML=(b.marks||[]).length?b.marks.map((m,i)=>`<div class="it" data-ml="${i}" style="padding:12px 4px;border-bottom:1px solid #8883">${ico('bm')} ${m.t} · ${new Date(m.d).toLocaleDateString()}</div>`).join(''):'<div class="empty">No bookmarks yet.</div>';
+else c.innerHTML=`<div class="bar" style="height:8px"><u style="width:${Math.round(b.pct*100)}%"></u></div><p>${Math.round(b.pct*100)}% read</p>`}
+/* profile & sub pages */
+const streak=()=>{const d=new Set(S.days||[]);let s=0,x=new Date();if(!d.has(x.toDateString()))x.setDate(x.getDate()-1);while(d.has(x.toDateString())){s++;x.setDate(x.getDate()-1)}return s};
+const MENU=[['palette','Appearance','Theme, accent, app icon','appearance'],['book','Reading','Fonts, layout, page turn','reading'],['chart','Statistics','Streak, time, goals','stats'],['bm','Annotations','Bookmarks, highlights, notes','notes'],['cloud','Sync','Cloud account, synchronization','sync'],['down','Backup & Restore','Export, import, data management','backup'],['home','Home layout','Show or hide Home sections','home'],['shield','Privacy','Data, history, recommendations','privacy'],['gear','Advanced','Storage, diagnostics','adv']];
+function prof(){$('#p2').innerHTML=`<h1 style="margin:0 0 4px">Profile</h1><div class="card pf"><div class="av">R</div><div><b style="font-size:18px">Reader</b><br><small style="color:var(--mut)">${books.length} books · ${ico('flame')} ${streak()} day streak</small></div></div>`+MENU.map(m=>`<div class="mi card" data-m="${m[3]}"><span class="mic">${ico(m[0])}</span><div><b>${m[1]}</b><small>${m[2]}</small></div><span><svg class="i"><use href="#i-right"/></svg></span></div>`).join('')}
+$('#p2').onclick=e=>{const m=e.target.closest('[data-m]');if(m)page(m.dataset.m)};
+const TL={white:'Light',paper:'Paper',sepia:'Sepia',dark:'Dark',midnight:'Midnight',oled:'OLED'},ACC=['#a66bff','#ff6fae','#ff5a4d','#ffb02e','#3ea66b','#4f7dff'],ICN=[['Midnight',4],['Aurora',5],['Ember',1],['Champagne',0],['Rose',2],['Minimal',3]];
+const tiles=()=>`<div class="tg">${Object.keys(TL).map(k=>`<div data-k="${k}" class="${S.th==k?'on':''}" style="background:${TH[k][0]};color:${TH[k][1]}">Aa<small>${TL[k]}</small></div>`).join('')}</div>`;
+const opt=(k,l)=>`<select data-s="${k}">${l.map(([v,n])=>`<option value="${v}"${S[k]==v?' selected':''}>${n}</option>`).join('')}</select>`;
+const stp=(k,v)=>`<span class="step"><button data-st="${k}:-1"><svg class="i"><use href="#i-minus"/></svg></button><b>${v}</b><button data-st="${k}:1"><svg class="i"><use href="#i-plus"/></svg></button></span>`;
+const typo=()=>`<div class="row">Font${opt('ff',[['Georgia,serif','Georgia'],['system-ui,sans-serif','Sans'],["'Times New Roman',serif",'Times'],['ui-monospace,monospace','Mono']])}</div><div class="row">Font Size${stp('fs',S.fs)}</div><div class="row">Line Height${stp('lh',(S.lh/10).toFixed(1))}</div><div class="row">Reading Mode${opt('md',[['paginated','Paginated'],['scrolled-doc','Continuous']])}</div><div class="row">Page Turn Effect${opt('an',[['slide','Slide'],['fade','Fade'],['flip','3D Flip'],['none','None']])}</div><h2>Theme</h2>${tiles()}`;
+let cp='',NF='all';
+function page(k,keep){cp=k;const P={
+appearance:()=>`<h2>Reader Theme</h2>${tiles()}<h2>Accent Color</h2><div class="sw">${ACC.map(c=>`<div data-ac="${c}" class="${S.acc==c?'on':''}" style="background:${c}"></div>`).join('')}</div><div class="row">Page Turn Effect${opt('an',[['slide','Slide'],['fade','Fade'],['flip','3D Flip'],['none','None']])}</div><h2>App Icon</h2><div class="ics">${ICONS.map((s,i)=>`<img src="${s}" data-i="${i}" class="${S.ic==i?'on':''}">`).join('')}</div><h2>App Theme</h2>${ICN.map(([n,i])=>`<div class="mi card" data-ic="${i}"><img src="${ICONS[i]}" style="width:32px;border-radius:9px"><div><b>${n}</b></div>${S.ic==i?ico('check'):''}</div>`).join('')}<p class="empty" style="text-align:left">The icon is used inside Novelle. The launcher icon changes in the native Android build.</p>`,
+reading:()=>typo(),
+stats:()=>{const m=S.mins||{},d=[...Array(30)].map((_,i)=>{const x=new Date();x.setDate(x.getDate()-29+i);return m[x.toISOString().slice(0,10)]||0}),mx=Math.max(1,...d),t=d.reduce((a,b)=>a+b,0),dn=books.filter(b=>b.pct>=.99).length,g=S.goal||12;
+return `<div class="tiles" style="grid-template-columns:repeat(3,1fr)"><div class="card"><b>${dn}</b><small>Books Read</small></div><div class="card"><b>${(S.days||[]).length}</b><small>Days Read</small></div><div class="card"><b>${Math.floor(t/60)}h ${t%60}m</b><small>Reading Time</small></div></div><div class="card" style="padding:14px"><div class="chart">${d.map(v=>`<i style="height:${Math.max(3,v/mx*100)}%"></i>`).join('')}</div><small style="color:var(--mut)">Minutes per day, last 30 days</small></div><div class="card sk"><svg class="i"><use href="#i-flame"/></svg><div><b>Reading Streak</b><br>${streak()} days</div></div><div class="card" style="padding:14px">Yearly Goal<b style="float:right">${dn} / ${g} books</b><div class="bar" style="height:8px"><u style="width:${Math.min(100,dn/g*100)}%"></u></div><button class="ghost" data-g="1" style="margin-top:12px">Change goal</button></div>`},
+notes:()=>{const it=[];books.forEach(b=>(b.marks||[]).forEach((m,i)=>it.push([b,m,i])));it.sort((a,b)=>b[1].d-a[1].d);
+return `<div class="tabs">${[['all','All'],['hl','Highlights'],['nt','Notes'],['bm','Bookmarks']].map(([k,t])=>`<span data-nf="${k}" class="${NF==k?'on':''}">${t}</span>`).join('')}</div>`+(NF=='all'||NF=='bm'?(it.length?it.map(([b,m,i])=>`<div class="mi card" data-open="${esc(b.id)}" data-l="${i}"><span class="mic"><svg class="i"><use href="#i-bm"/></svg></span><div><b>Bookmark</b><small>${esc(b.title)} · ${m.t}</small></div></div>`).join(''):'<div class="empty">No bookmarks yet. Tap the bookmark button while reading.</div>'):'<div class="empty">Highlights and notes are not built yet.</div>')},
+sync:()=>'<div class="empty"><svg class="i"><use href="#i-cloud"/></svg>Cloud sync needs an account service, which is not built yet. Novelle works fully offline, and Backup &amp; Restore moves your progress between devices.</div>',
+backup:()=>`<div class="mi card" data-b="c"><span class="mic"><svg class="i"><use href="#i-down"/></svg></span><div><b>Create Backup</b><small>Library info, progress, bookmarks, settings (.novelle)</small></div></div><div class="mi card" data-b="r"><span class="mic"><svg class="i"><use href="#i-up"/></svg></span><div><b>Restore Backup</b><small>Import a Novelle backup file</small></div></div><p class="empty">Backups hold your library details and progress. Book files stay on this device.</p><input type="file" id="rf" accept=".novelle,.json" hidden>`,
+home:()=>[['cont','Continue reading'],['stats','Library stats'],['rec','Recommended'],['recent','Recently added'],['cols','Collections']].map(([k,t])=>`<label class="row">${t}<input type="checkbox" data-hs="${k}"${hsOn(k)?' checked':''}></label>`).join(''),
+privacy:()=>'<div class="empty" style="text-align:left">Your books, notes and recommendations stay on this device. Nothing is sent to any server.</div>',
+adv:()=>'<button class="ghost" data-wipe="1">Delete all books and progress</button>'};
+const t=(MENU.find(m=>m[3]==k)||[0,'Reading'])[1];sub(t,P[k](),keep)}
+function ui(e,re){const t=e.target.closest('[data-k],[data-ac],[data-i],[data-st],[data-ic]');if(!t)return;const d=t.dataset;
+if(d.k)S.th=d.k;else if(d.ac){S.acc=d.ac;document.documentElement.style.setProperty('--ac',d.ac)}else if(d.i||d.ic){S.ic=+(d.i||d.ic);applyIcon()}else if(d.st){const[k,n]=d.st.split(':');S[k]=Math.max(k=='fs'?12:10,Math.min(k=='fs'?36:26,S[k]+ +n))}
+save();applyTheme();re();return 1}
+function uiSel(e){const t=e.target;if(!t.dataset.s)return;S[t.dataset.s]=t.value;save();applyTheme();if(t.dataset.s=='md'&&cur&&$('#rd.on'))open(cur.id)}
+const mkBackup=()=>{const o={v:1,S,C,books:books.map(({data,...r})=>r)},a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(o)],{type:'application/json'}));a.download='library.novelle';a.click();toast('Backup created')};
+const sb=$('#sbody');
+sb.onclick=async e=>{if(ui(e,()=>page(cp,1)))return;const t=e.target,c=n=>t.closest(`[${n}]`),d=k=>c('data-'+k)?.dataset[k];
+if(d('dt'))dtab(d('dt'));else if(c('data-rm')){if(confirm('Remove this book from your library?')){await del(DB.id);books=books.filter(b=>b!=DB);$('#sub').className='';render()}}
+else if(d('h')){await open(DB.id);rend&&rend.display(d('h'))}else if(d('ml')!=null){await open(DB.id);go2(DB.marks[+d('ml')].l)}
+else if(d('nf')){NF=d('nf');page('notes',1)}else if(d('open')){const b=books.find(x=>x.id==d('open'));await open(b.id);go2(b.marks[+c('data-l').dataset.l].l)}
+else if(c('data-g')){S.goal=Math.max(1,+prompt('Books to read this year?',S.goal||12)||12);save();page('stats',1)}
+else if(d('b')=='c')mkBackup();else if(d('b')=='r')$('#rf').click();
+else if(c('data-wipe')&&confirm('Delete every book and its progress from this device?')){for(const b of books)await del(b.id);books=[];render();$('#sub').className=''}};
+sb.onchange=e=>{const t=e.target;if(t.dataset.s)uiSel(e);else if(t.dataset.hs){S.hs=S.hs||{};S.hs[t.dataset.hs]=t.checked?1:0;save();home()}
+else if(t.id=='rf'&&t.files[0])t.files[0].text().then(x=>{try{const o=JSON.parse(x);o.books.forEach(r=>{const b=books.find(y=>y.id==r.id);if(b){b.pct=r.pct;b.loc=r.loc;b.marks=r.marks||[];put(b)}});Object.assign(S,o.S);C=o.C||C;save();sc();render();toast('Backup restored')}catch(er){toast('Not a valid backup file')}})};
+setInterval(()=>{if($('#rd.on')&&!document.hidden){const k=new Date().toISOString().slice(0,10);S.mins=S.mins||{};S.mins[k]=(S.mins[k]||0)+1;save()}},60000);
+/* reader extras */
+const qa=document.createElement('div');qa.id='qa';qa.innerHTML='<button data-q="tc"><svg class="i"><use href="#i-list"/></svg></button><button data-q="aa"><svg class="i"><use href="#i-text"/></svg></button><button data-q="se"><svg class="i"><use href="#i-search"/></svg></button><button data-q="br"><svg class="i"><use href="#i-sun"/></svg></button>';$('#bot').append(qa);
+qa.onclick=e=>{const q=e.target.dataset.q;if(q=='tc')$('#tc').click();else if(q=='aa')aa();else if(q=='se')srch();else if(q=='br')br()};
+let aa=()=>{sh.innerHTML='<h2>Reading Settings</h2>'+typo();sh.className='on'};
+sh.onclick=e=>ui(e,aa);sh.onchange=uiSel;
+function br(){sh.innerHTML=`<h2>Brightness</h2><input type="range" id="brr" min="30" max="100" value="${S.br||100}" style="width:100%">`;sh.className='on';$('#brr').oninput=e=>{S.br=+e.target.value;view.style.filter=`brightness(${S.br}%)`;save()}}
+function srch(){sh.innerHTML='<h2>Search in book</h2><input type="search" id="bq" placeholder="Type, then press Enter"><div id="br2"></div>';sh.className='on';
+$('#bq').onkeydown=async e=>{if(e.key!='Enter')return;const q=e.target.value.trim(),o=$('#br2');if(!bk||!q){o.innerHTML='<div class="empty">Text search works in EPUB books.</div>';return}
+o.innerHTML='<div class="empty">Searching…</div>';const r=[];for(const it of bk.spine.spineItems){if(r.length>40)break;try{await it.load(bk.load.bind(bk));r.push(...it.find(q));it.unload()}catch(x){}}
+o.innerHTML=r.length?'':'<div class="empty">No matches.</div>';r.slice(0,40).forEach(m=>{const d=document.createElement('div');d.className='it';d.textContent='…'+m.excerpt+'…';d.onclick=()=>{rend.display(m.cfi);sh.className=''};o.append(d)})}}
+showPg('ph');render();
+</script>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-bm" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z" fill="currentColor"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-right" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-11"/></symbol>
+<symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/></symbol>
+<symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1-1-7.9A6 6 0 0 1 17.500 9 4.500 4.500 0 0 1 17 18z"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11m-4-4l4 4 4-4M5 20h14"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V5m-4 4l4-4 4 4M5 20h14"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></symbol>
+<symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.500 0 2-1 1.500-2-.6-1.200.2-2.500 1.700-2.500H17a4 4 0 0 0 4-4c0-5-4-9.500-9-9.500z"/><circle cx="8" cy="11" r="1"/><circle cx="12" cy="7.500" r="1"/><circle cx="16" cy="11" r="1"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19a2 2 0 0 1 2-2h13"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 20V11M12 20V4M19 20v-7"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10H3zM9 21v-6h6v6"/></symbol>
+<symbol id="i-text" viewBox="0 0 24 24"><path d="M4 7V5h16v2M9 19h6M12 5v14"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.500 1.500M17.500 17.500L19 19M19 5l-1.500 1.500M6.500 17.500L5 19"/></symbol>
+<symbol id="i-wand" viewBox="0 0 24 24"><path d="M4 20L15 9M15 3v4M13 5h4M20 11v3M18.500 12.500h3M9 4v2M8 5h2"/></symbol>
+<symbol id="i-landmark" viewBox="0 0 24 24"><path d="M3 21h18M5 21V10M9 21V10M15 21V10M19 21V10M2 10l10-6 10 6z"/></symbol>
+<symbol id="i-brain" viewBox="0 0 24 24"><path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 3 5 3 3 0 0 0 5 1V4a3 3 0 0 0-3 0zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-3 5 3 3 0 0 1-5 1"/></symbol>
+<symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10c1 1 1 2 1 3h6c0-1 0-2 1-3a6 6 0 0 0-4-10z"/></symbol>
+<symbol id="i-planet" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M3 15c-1-3 4-8 12-9m6 3c1 3-4 8-12 9"/></symbol>
+</defs></svg>
+<style>
+.i{width:1.15em;height:1.15em;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.22em;flex:none}
+.ib .i,.tb .i,#qa .i{width:22px;height:22px}.fab .i{width:26px;height:26px;stroke-width:2.2}.mic .i{width:20px;height:20px}.step .i{width:16px;height:16px}.sk .i{width:30px;height:30px;color:#ff9a6b}.sa .i{width:13px;height:13px}
+.empty .i{width:38px;height:38px;display:block;margin:0 auto 10px;color:var(--ac)}.cats span .i{width:25px;height:25px}.play .i{width:18px;height:18px;margin-left:2px}.chip2 .i{width:15px;height:15px;margin-right:2px}
+:root{--ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.34,1.4,.5,1)}
+#app{position:relative;z-index:1}
+#fx{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none}
+#fx i{position:absolute;width:85vmax;height:85vmax;border-radius:50%;filter:blur(70px);opacity:.5;will-change:transform;background:radial-gradient(circle,#7a3fd1,transparent 65%);animation:drift 28s ease-in-out infinite alternate}
+#fx i:nth-child(1){left:-30vmax;top:-20vmax}#fx i:nth-child(2){right:-40vmax;top:25vh;background:radial-gradient(circle,#4a2aa8,transparent 65%);animation-duration:34s;animation-delay:-9s}#fx i:nth-child(3){left:-20vmax;bottom:-35vmax;background:radial-gradient(circle,#b0449a88,transparent 65%);animation-duration:40s;animation-delay:-17s}
+@keyframes drift{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(12vmax,8vmax,0) scale(1.15)}100%{transform:translate3d(-8vmax,14vmax,0) scale(.95)}}
+.card{background:rgba(44,24,88,.42);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.11)}
+.pg{padding-bottom:128px}.fab{bottom:calc(104px + env(safe-area-inset-bottom,0px))}
+nav{left:14px;right:14px;bottom:calc(12px + env(safe-area-inset-bottom,0px));border-radius:30px;padding:6px;background:rgba(34,18,70,.55);-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 40px #0008;position:fixed}
+nav button{position:relative;z-index:1;background:none!important;transition:color .3s}nav button.on{color:#e4d4ff}nav button.on svg{animation:pop .5s var(--spring)}
+#ind{position:absolute;top:6px;bottom:6px;left:0;border-radius:24px;background:rgba(166,107,255,.26);border:1px solid rgba(255,255,255,.22);box-shadow:inset 0 0 14px #fff1;transition:transform .5s var(--spring),width .5s var(--spring);z-index:0}
+@keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+@keyframes rise{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes pgin{from{opacity:0}to{opacity:1}}
+.pg.on{animation:pgin .35s ease}
+.anim :is(.bk,.card,.mi,.chip2,.cats>div,.ct>div,.h2b,.cc,.tg div){animation:rise .6s var(--ease) both;animation-delay:calc(var(--i,0)*45ms)}
+.anim .bar u{transform-origin:left;animation:grow 1s var(--ease) .3s both}
+button,.card,.mi,.bk,.chip2,.cats>div,.ct>div,.cc,.tg div,.sw div{transition:transform .22s var(--ease),background .3s,border-color .3s,color .3s,box-shadow .3s,opacity .3s}
+:is(button,.card,.mi,.bk,.chip2,.cats>div,.ct>div,.cc):active{transform:scale(.95)}
+.bar u{transition:width .8s var(--ease)}
+#sub.on{animation:subin .4s var(--ease)}#sub.on.out{animation:subout .24s ease-in forwards}
+@keyframes subin{from{opacity:0;transform:translateX(44px)}to{opacity:1;transform:none}}@keyframes subout{to{opacity:0;transform:translateX(44px)}}
+#rd.on{animation:rdin .45s var(--ease)}@keyframes rdin{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+.tb{transition:transform .42s cubic-bezier(.32,.72,0,1),opacity .3s}#sheet{transition:transform .45s cubic-bezier(.32,.72,0,1)}
+#sp>:not(svg){animation:rise .9s var(--ease) both}#sp img{animation:rise .9s var(--ease) both,float 5s ease-in-out .9s infinite}#sp h1{animation-delay:.15s}#sp p{animation-delay:.3s}#sp .btn{animation-delay:.45s}#sp small{animation-delay:.6s}
+@keyframes float{50%{transform:translateY(-9px)}}
+#sp.out{animation:spout .55s ease forwards}@keyframes spout{to{opacity:0;transform:scale(1.08);filter:blur(8px)}}
+.grid.large{grid-template-columns:repeat(2,1fr)}.grid.compact{grid-template-columns:1fr;gap:8px}.grid.compact .bk{display:flex;gap:12px;align-items:center}.grid.compact img{width:38px;border-radius:6px}.grid.compact .t{flex:1}.grid.compact .t i,.grid.compact .bar{display:none}
+.cc{position:relative;height:100px;border-radius:24px;overflow:hidden;margin-top:12px;border:1px solid rgba(255,255,255,.12);background:rgba(44,24,88,.45)}
+.cv{position:absolute;right:46px;top:0;bottom:0;width:60%;display:flex;gap:6px;padding:10px 0;justify-content:flex-end;-webkit-mask-image:linear-gradient(90deg,transparent,#000 40%);mask-image:linear-gradient(90deg,transparent,#000 40%)}.cv img{height:100%;aspect-ratio:2/3;object-fit:cover;border-radius:6px;transform:rotate(-4deg)}
+.ct2{position:relative;padding:20px 18px}.ct2 b{font:600 20px Georgia;display:block}.ct2 small{color:var(--mut)}
+.pl{position:absolute;right:14px;top:50%;margin-top:-20px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.88);color:#2a1250;display:grid;place-items:center}.pl .i{width:20px;height:20px;stroke-width:2.4}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+<script>
+function ico(n){return '<svg class="i"><use href="#i-'+n+'"/></svg>'}
+const fx=document.createElement('div');fx.id='fx';fx.innerHTML='<i></i><i></i><i></i>';document.body.prepend(fx);
+const ind=document.createElement('i');ind.id='ind';$('nav').prepend(ind);
+function moveInd(){const b=$('nav button.on');if(b){ind.style.width=b.offsetWidth+'px';ind.style.transform='translateX('+b.offsetLeft+'px)'}}
+function countUp(p){p.querySelectorAll('.tiles b').forEach(el=>{const t=el.textContent.trim();if(!/^\d+$/.test(t))return;const n=+t,s=performance.now();(function f(now){const k=Math.min(1,(now-s)/900),e=1-Math.pow(1-k,3);el.textContent=Math.round(n*e);if(k<1)requestAnimationFrame(f)})(s)})}
+function animPg(id){const p=$('#'+id);p.querySelectorAll('.bk,.card,.mi,.chip2,.cats>div,.ct>div,.h2b,.cc,.tg div').forEach((e,i)=>e.style.setProperty('--i',Math.min(i,16)));p.classList.remove('anim');void p.offsetWidth;p.classList.add('anim');clearTimeout(p._t);p._t=setTimeout(()=>p.classList.remove('anim'),1600);countUp(p)}
+const sp0=showPg;showPg=function(id){const was=$('#'+id).classList.contains('on');sp0(id);moveInd();if(!was)animPg(id)};
+addEventListener('resize',moveInd);requestAnimationFrame(moveInd);setTimeout(moveInd,350);setTimeout(()=>animPg('ph'),60);
+$('#sback').onclick=()=>{const s=$('#sub');s.classList.add('out');setTimeout(()=>{s.className=''},240)};
+if($('#sp'))$('#gs').onclick=()=>{try{localStorage.setItem('nsp',1)}catch(e){}const s=$('#sp');s.classList.add('out');setTimeout(()=>{s.remove();animPg('ph')},520)};
+$('#chips').insertAdjacentHTML('afterend',`<div class="chips" id="vms">${[['grid','Grid','grid'],['large','Large','book'],['list','List','list'],['compact','Compact','list']].map(([k,t,i])=>`<span class="chip2${(S.vw||'grid')==k?' on':''}" data-v="${k}">${ico(i)} ${t}</span>`).join('')}</div>`);
+$('#grid').className='grid '+(S.vw||'grid');
+$('#vms').onclick=e=>{const v=e.target.closest('[data-v]');if(!v)return;S.vw=v.dataset.v;save();$$('#vms .chip2').forEach(c=>c.classList.toggle('on',c==v));$('#grid').className='grid '+S.vw};
+let CK='';
+cols=function(){$('#cl').innerHTML=Object.keys(C).map(k=>{const bs=C[k].map(id=>books.find(b=>b.id==id)).filter(Boolean);return `<div class="cc" data-col="${esc(k)}"><div class="cv">${bs.slice(0,3).map(b=>`<img src="${b.cover}">`).join('')}</div><div class="ct2"><b>${esc(k)}</b><small>${ico('book')} ${C[k].length} books</small></div><button class="pl" data-col="${esc(k)}">${ico('plus')}</button></div>`}).join('')||'<div class="empty">'+ico('layers')+'Group books into collections like Summer Reading. A book can live in several.</div>'};
+$('#cl').onclick=e=>{const c=e.target.closest('[data-col]');if(c)colPage(c.dataset.col)};$('#cl').onchange=null;
+function colPage(k){CK=k;const bs=C[k].map(id=>books.find(b=>b.id==id)).filter(Boolean);
+sub(k,`<div class="grid">${bs.map(card).join('')}</div>${bs.length?'':'<div class="empty">Empty collection. Add books below.</div>'}<h2>Add or remove books</h2>${books.map(b=>`<label class="row"><span>${esc(b.title)}</span><input type="checkbox" data-c="${esc(k)}" data-id="${esc(b.id)}"${C[k].includes(b.id)?' checked':''}></label>`).join('')}<button class="ghost" data-delc="1" style="margin-top:14px">Delete collection</button>`)}
+const oc=sb.onchange;sb.onchange=e=>{const t=e.target;if(t.dataset.c){const k=t.dataset.c,s=new Set(C[k]);t.checked?s.add(t.dataset.id):s.delete(t.dataset.id);C[k]=[...s];sc();cols();home()}else oc(e)};
+const oc2=sb.onclick;sb.onclick=e=>{if(e.target.closest('[data-delc]')){if(confirm('Delete this collection? Books stay in your library.')){delete C[CK];sc();cols();home();$('#sub').className=''}}else oc2(e)};
+render();
+</script>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f0620"/><stop offset=".55" stop-color="#34165f"/><stop offset="1" stop-color="#9a3f78"/></linearGradient>
+<radialGradient id="mg"><stop offset="0" stop-color="#ffb08a"/><stop offset="1" stop-color="#ff7aa0" stop-opacity="0"/></radialGradient>
+<symbol id="scene" viewBox="0 0 400 130" preserveAspectRatio="xMaxYMax slice"><rect width="400" height="130" fill="url(#sky)"/><circle cx="286" cy="52" r="34" fill="url(#mg)" opacity=".7"/><circle cx="286" cy="52" r="15" fill="#ffb19a"/>
+<path d="M0 108L60 76l52 24 60-38 70 40 60-32 100 42v18H0z" fill="#3c1b70" opacity=".85"/><path d="M0 124l80-30 70 20 80-28 70 30 100-22v36H0z" fill="#1e0d40"/>
+<path d="M322 130V76h8V54l5-14 5 14v22h8V64h6V46l4-14 4 14v18h6V34l4-16 4 16v30h6v66z" fill="#0c0520"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/></symbol>
+<symbol id="i-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></symbol>
+<symbol id="i-dots" viewBox="0 0 24 24"><path d="M12 5h.01M12 12h.01M12 19h.01" stroke-width="3"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.700 5.600 6.100.9-4.400 4.300 1 6.100L12 17l-5.400 2.900 1-6.100L3.200 9.500l6.100-.9z"/></symbol>
+<symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/></symbol>
+<symbol id="i-dice" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h.01M15 9h.01M9 15h.01M15 15h.01M12 12h.01" stroke-width="3"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12h.01" stroke-width="3"/></symbol>
+<symbol id="i-columns" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 4v16"/></symbol>
+<symbol id="i-sort" viewBox="0 0 24 24"><path d="M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21s-8-5.500-8-11a4.500 4.500 0 0 1 8-2.800A4.500 4.500 0 0 1 20 10c0 5.500-8 11-8 11z"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></symbol>
+<symbol id="i-msg" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.500h.01"/></symbol>
+<symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5zM3 13l9 5 9-5"/></symbol>
+<symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-2 5-5 2 2-5z"/></symbol>
+<symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20l4-1 11-11-3-3L5 16z"/></symbol>
+</defs></svg>
+<style>
+#fx i{animation:none!important;opacity:.32}
+.anim :is(.bk,.card,.mi,.chip2,.cats>div,.ct>div,.h2b,.cc,.tg div,.gc,.hc,.ctile,.tl){animation:none!important}
+.anim .bar u{animation:none!important}.pg.on{animation:pgin .26s ease}
+nav button.on svg{animation:none}#ind{transition:transform .38s cubic-bezier(.3,.7,.2,1),width .38s cubic-bezier(.3,.7,.2,1)}
+#sub.on{animation:subin .3s cubic-bezier(.3,.7,.2,1)}@keyframes subin{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+#sp img{animation:none!important}#sp>:not(svg){animation:pgin .7s ease both}
+:is(button,.card,.mi,.bk,.chip2,.gc,.hc,.ctile,.cc):active{transform:scale(.975)}
+.hd{position:relative;margin:-14px -16px 14px;padding:14px 16px 22px;min-height:96px;overflow:hidden}
+.hb{position:absolute;inset:0;width:100%;height:100%;-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
+.hr{position:relative;display:flex;align-items:center;gap:12px}.hl{width:48px;height:48px;border-radius:14px;box-shadow:0 0 18px #a66bff77}.hr b{font:600 27px Georgia;display:block;line-height:1.05;color:#ffe9dd}.hr small{color:#e5d8ff;font-size:12px}.hbs{margin-left:auto;display:flex;gap:8px}
+.rb{position:relative;width:42px;height:42px;border-radius:50%;background:rgba(20,8,40,.45);border:1px solid rgba(255,255,255,.3);color:#fff;display:grid;place-items:center;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding:0}.rb .i{width:20px;height:20px}.rb s{position:absolute;top:7px;right:8px;width:8px;height:8px;border-radius:50%;background:#c06bff}
+.gr{margin:-6px 0 14px}.gr small{font:22px Georgia;color:#f0e4ff}.gr h1{font-size:38px;margin:0}
+.cr2{position:relative;overflow:hidden;padding:14px;border-radius:24px;border:1px solid rgba(190,140,255,.55);background:rgba(40,20,80,.55)}.cr2 .cs{position:absolute;right:0;top:0;height:100%;width:70%;opacity:.5;-webkit-mask-image:linear-gradient(90deg,transparent,#000);mask-image:linear-gradient(90deg,transparent,#000)}
+.cr2>*{position:relative}.cr2 .cl{font:600 20px Georgia;display:block;margin-bottom:10px}.cw{display:flex;gap:14px;align-items:center}.cw img{width:84px;aspect-ratio:2/3;object-fit:cover;border-radius:10px}.cw h3{font:600 20px Georgia;margin:0 0 4px}.cw p{margin:0 0 10px;color:#e0d4f8}
+.bk.rc{flex:0 0 112px;position:relative;padding:0;border-radius:16px}.rc img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;border-radius:0}.rt{position:absolute;left:0;right:0;bottom:0;padding:30px 8px 9px;text-align:center;background:linear-gradient(transparent,#000d)}.rt b{font:600 12px Georgia;display:block}.rt small{font-size:10px;color:#cbbfe8}
+.tiles .tl{padding:14px 2px 10px;border-radius:18px}.tl .i{width:26px;height:26px;display:block;margin:0 auto 6px}.tiles b{font-size:21px}
+.h2b .i{margin-right:6px;color:#e5d8ff;width:22px;height:22px}.hs{gap:10px}
+.ctiles{display:flex;gap:10px;overflow-x:auto}.ctile{position:relative;flex:1 0 82px;height:82px;border-radius:16px;overflow:hidden;display:grid;align-items:end;justify-items:center;padding-bottom:9px;font:600 14px Georgia;border:1px solid rgba(255,255,255,.2)}.ctile .i{position:absolute;top:12px;left:50%;margin-left:-17px;width:34px;height:34px;opacity:.5}
+.hcs{display:flex;gap:10px;overflow-x:auto}.hc{flex:1 0 150px;display:flex;align-items:center;gap:10px;padding:14px 12px;border-radius:16px;background:linear-gradient(120deg,#3a1d6e,#5b2d6e88);border:1px solid rgba(255,255,255,.14)}.hc .i{width:26px;height:26px;color:#e08cff}.hc b{display:block;font:600 14px Georgia}.hc small{color:var(--mut)}
+/* library */
+.bk{background:rgba(44,24,88,.4);border:1px solid rgba(255,255,255,.14);border-radius:16px;overflow:hidden}.bk img{border-radius:0;box-shadow:none}.cvw{position:relative}.fv{position:absolute;top:6px;right:6px;color:#ff7ab8}.fv .i{width:20px;height:20px;fill:#ff7ab8}
+.bk .t{display:none}.ft{display:flex;align-items:center;gap:6px;padding:7px 8px;font-size:11px}.ft .bar{flex:1;margin:0}.ft .i{width:14px;height:14px}.rc .ft{display:none}
+.grid.list .bk,.grid.compact .bk{display:flex;gap:12px;align-items:center}.grid.list .cvw{width:70px}.grid.list .t,.grid.compact .t{display:block;flex:1;padding:8px}.grid.list .ft,.grid.compact .ft{display:none}.grid.compact .cvw{width:42px}.grid.compact .t i{display:none}
+.grid.authors{display:block}.grid.authors .mi{margin-top:8px}
+.seg{display:flex;border-radius:999px;background:rgba(30,16,60,.6);border:1px solid rgba(255,255,255,.14);padding:3px;gap:2px}.seg span{padding:7px 13px;border-radius:999px;color:var(--mut);font-size:12px;transition:background .25s,color .25s}.seg span.on{background:linear-gradient(90deg,#8a4dff,#b04df0);color:#fff}
+.ctl{display:flex;gap:10px;align-items:center;margin:8px 0 14px}.chip2.sel{display:flex;align-items:center;gap:6px;padding:0 12px}.chip2.sel select{background:none;border:0;color:var(--fg);padding:9px 0;font-size:13px;max-width:150px}.chip2.sel option{color:#000}
+#q{margin:4px 0 8px}.fab{display:flex;align-items:center;gap:8px;width:auto;height:54px;padding:0 22px;border-radius:999px;font-size:16px;font-weight:600}.fab .i{width:22px;height:22px}
+/* collections, discover, profile */
+.ttl{display:flex;gap:12px;align-items:center}.ttl .i{width:34px;height:34px}.btn.sm{padding:10px 14px;font-size:13px;white-space:nowrap}
+.gcs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.gc{position:relative;height:104px;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.16);background:linear-gradient(130deg,#3b1d70,#7a3a8a99)}
+.gv{position:absolute;right:8px;top:8px;bottom:8px;display:flex;gap:3px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 30%);mask-image:linear-gradient(90deg,transparent,#000 30%)}.gv img{height:100%;aspect-ratio:2/3;object-fit:cover;border-radius:4px}
+.gi{position:absolute;left:12px;bottom:12px;right:12px;display:flex;gap:9px;align-items:center}.gi>.i{width:24px;height:24px;color:#e08cff}.gi b{font:600 15px Georgia;display:block;line-height:1.1}.gi small{color:#e3d7fb;font-size:12px}
+.gc.new{border:1.5px dashed rgba(190,140,255,.6);background:none;display:grid;place-items:center;text-align:center;color:var(--fg)}.gc.new .i{width:30px;height:30px;color:#c98bff;display:block;margin:0 auto 4px}
+.heroD{position:relative;overflow:hidden;border-radius:22px;padding:20px;border:1px solid rgba(255,255,255,.18);margin-bottom:14px;min-height:170px}.heroD .hb{-webkit-mask-image:none;mask-image:none;opacity:.9}.heroD>*:not(.hb){position:relative;max-width:62%}.heroD h2{font:600 26px Georgia;margin:0 0 8px;line-height:1.1}.heroD p{margin:0 0 14px;font-size:13px;color:#e4d8fa}.bkart{position:absolute!important;right:-6px;bottom:6px;width:46%!important;max-width:none!important}
+.mode{display:flex;gap:8px;overflow-x:auto;margin-bottom:6px}.mode span{flex:1 0 82px;text-align:center;padding:12px 4px;border-radius:16px;background:rgba(40,20,80,.45);border:1px solid rgba(255,255,255,.14);font-size:12px;color:var(--fg)}.mode span .i{display:block;margin:0 auto 6px;width:26px;height:26px}.mode span.on{background:linear-gradient(160deg,#6c3bd0aa,#3a1d6e);border-color:#b98cff}
+.av2{width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at 50% 30%,#ffb08a,#7a3fd1 60%,#2a1250);border:2px solid #c7a1ff;display:grid;place-items:center;flex:none}.av2 .i{width:36px;height:36px}
+.strip{display:flex;justify-content:space-around;padding:14px 4px;margin:14px 0}.strip div{text-align:center;font-size:11px;color:var(--mut)}.strip .i{width:22px;height:22px;display:block;margin:0 auto 4px;color:#d8c4ff}.strip b{display:block;font-size:18px;color:var(--fg)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ring{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;flex:none}.ring b{width:48px;height:48px;border-radius:50%;background:#1c0f3a;display:grid;place-items:center;font-size:14px}
+.pair .mi{margin:0;padding:14px 12px}.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sg .mi{margin:0;padding:14px 10px;align-items:center}.sg .mi b{font:600 15px Georgia;line-height:1.15}.sg .mi small{font-size:11px}.sg .mic{width:30px;background:none}.sg .mic .i{width:28px;height:28px}
+.cz{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.cz div{border-radius:18px;border:1px solid rgba(255,255,255,.16);background:rgba(44,24,88,.4);padding:10px 8px;font-size:12px;overflow:hidden}.cz .pv{height:56px;border-radius:12px;margin-bottom:8px;display:grid;place-items:center;font:34px Georgia;overflow:hidden}.cz small{display:block;color:var(--mut)}.cz img{height:100%;border-radius:10px}
+/* reader */
+#top{background:linear-gradient(rgba(15,6,32,.92),rgba(15,6,32,.0));padding:calc(8px + env(safe-area-inset-top,0px)) 12px 18px;overflow:hidden}#top>*{position:relative}#top .hb{position:absolute;opacity:.55}
+#rc{width:40px;height:56px;object-fit:cover;border-radius:6px;flex:none}#rt{display:flex;flex-direction:column;white-space:normal}#rt b{font:600 17px Georgia}#rt small{opacity:.8;font-size:12px}#tc{display:none}
+#bot{background:linear-gradient(rgba(15,6,32,0),rgba(15,6,32,.94) 28%);padding-top:22px;gap:6px}#qa{background:rgba(40,20,80,.55);border:1px solid rgba(255,255,255,.16);border-radius:28px;padding:4px 10px;align-items:center;margin-top:4px}#qa .vr{width:1px;height:24px;background:#fff3}
+#rd.light #top,#rd.light #bot{background:linear-gradient(rgba(250,240,222,.96),rgba(250,240,222,0));color:#2b1d0e}#rd.light #bot{background:linear-gradient(rgba(250,240,222,0),rgba(250,240,222,.96) 28%)}#rd.light #qa,#rd.light #sheet{background:rgba(255,248,236,.95);color:#2b1d0e;border-color:#0002}
+#sheet{border-radius:24px 24px 0 0;border:1px solid rgba(255,255,255,.14);max-height:62%}.grab{display:block;width:44px;height:4px;border-radius:2px;background:#fff4;margin:0 auto 12px}
+.tabs2{display:flex;gap:6px;margin-bottom:12px}.tabs2 span{flex:1;text-align:center;padding:10px 4px;border-radius:14px;font-size:13px}.tabs2 span.on{background:rgba(166,107,255,.3);border:1px solid #c7a1ff88}
+.pr3{display:grid;grid-template-columns:1.2fr 1.2fr 1fr 1fr;gap:10px;margin-bottom:12px}.pr3 small{display:block;opacity:.7;margin-bottom:6px;font-size:11px}.pr3 select{width:100%;background:rgba(166,107,255,.14);border:1px solid #fff2;border-radius:12px;padding:10px 6px}
+.tiles2{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.tiles2 div{border-radius:14px;padding:12px 4px;text-align:center;border:2px solid transparent;font-size:12px}.tiles2 .i{display:block;margin:0 auto 4px;width:20px;height:20px}.tiles2 .on{border-color:#b98cff;box-shadow:0 0 12px #a66bffaa}
+#sel{position:fixed;left:50%;transform:translateX(-50%);z-index:9;display:none;align-items:center;gap:12px;padding:10px 16px;border-radius:24px;background:rgba(30,14,60,.96);border:1px solid #fff3;box-shadow:0 10px 30px #0008}#sel.on{display:flex}#sel i{width:26px;height:26px;border-radius:50%;display:block}#sel button{background:none;border:0;color:#fff;padding:2px}#sel .i{width:21px;height:21px}
+.hlr{display:flex;gap:10px;padding:12px 4px;border-bottom:1px solid #8883}.hlr s{width:4px;border-radius:2px;flex:none}
+</style>
+<div id="sel"></div>
+<script>
+const SC='<svg class="hb" viewBox="0 0 400 130"><use href="#scene"/></svg>';
+const rbtn=(i,at,dot)=>`<button class="rb" ${at||''}>${ico(i)}${dot?'<s></s>':''}</button>`;
+const hdr=(sub,b)=>`<div class="hd">${SC}<div class="hr"><img class="hl" src="${ICONS[S.ic]}"><div><b>Novelle</b><small>${sub}</small></div><div class="hbs">${b}</div></div></div>`;
+const NB=rbtn('bell','data-toast="No new notifications"',1);
+const rrow=l=>`<div class="hs">${l.map(b=>`<div class="bk rc" data-id="${esc(b.id)}"><img src="${b.cover}"><div class="rt"><b>${esc(b.title)}</b><small>${esc(b.author)}</small></div></div>`).join('')}</div>`;
+const CG=[['Classics','landmark','#6a5aa8','#2b3a6e'],['Fantasy','wand','#b05ac0','#3a1a6e'],['Sci-Fi','planet','#3a7ad0','#1d1d5e'],['History','clock','#d0864a','#4a2a5e'],['Philosophy','bulb','#9a6ad8','#2a1a5e']];
+const ctiles=()=>`<div class="ctiles">${CG.map(([n,i,a,b])=>`<div class="ctile" data-cat="${n}" style="background:linear-gradient(160deg,${a},${b})">${ico(i)}${n}</div>`).join('')}</div>`;
+const SM=()=>[['reading','Currently Reading','book',books.filter(b=>b.opened&&b.pct>0&&b.pct<.99)],['toread','To Read','bm',books.filter(b=>!b.opened)],['recent','Recently Added','clock',[...books].sort((a,b)=>b.added-a.added).slice(0,15)],['fav','Favorites','heart',books.filter(b=>b.fav)]];
+document.addEventListener('click',e=>{const t=e.target.closest('[data-go],[data-toast],[data-srch],[data-cat]');if(!t)return;const d=t.dataset;if(d.go)showPg(d.go);if(d.toast)toast(d.toast);if('srch' in d){showPg('p0');$('#q').hidden=false;$('#q').focus()}if(d.cat)go2lib(d.cat)});
+countUp=function(){};
+card=b=>`<div class="bk" data-id="${esc(b.id)}"><div class="cvw"><img src="${b.cover}" alt="">${b.fav?`<span class="fv">${ico('heart')}</span>`:''}</div><div class="t"><b>${esc(b.title)}</b><i>${esc(b.author)}</i></div><div class="ft"><span>${Math.round(b.pct*100)}%</span><div class="bar"><u style="width:${Math.round(b.pct*100)}%"></u></div>${ico('dots')}</div></div>`;
+/* HOME */
+home=function(){const h=new Date().getHours(),g=h<5||h>=18?'Good evening,':h<12?'Good morning,':'Good afternoon,',c=books.filter(b=>b.opened&&b.pct<.99).sort((a,b)=>b.opened-a.opened)[0],n=f=>books.filter(f).length,un=books.filter(b=>!b.opened);
+const au=new Set(books.filter(b=>b.pct>.05).map(b=>norm(b.author)).filter(Boolean)),rec=[...un.filter(b=>au.has(norm(b.author))),...un.filter(b=>!au.has(norm(b.author)))].slice(0,12);
+const T=(i,c,v,l)=>`<div class="card tl"><svg class="i" viewBox="0 0 24 24" style="stroke:${c}"><use href="#i-${i}"/></svg><b>${v}</b><small>${l}</small></div>`;
+const H=(t,go)=>`<h2 class="h2b">${t}${go?`<span class="sa" data-go="${go}">See All ${ico('right')}</span>`:''}</h2>`;
+let o=hdr('Your Books. Your Space. Your Way.',rbtn('search','data-srch="1"')+NB+rbtn('user','data-go="p2"'))+`<div class="gr"><small>${g}</small><h1>Reader</h1></div>`;
+if(hsOn('cont')&&c)o+=`<div class="cr2 bk" data-id="${esc(c.id)}"><svg class="cs" viewBox="0 0 400 130" preserveAspectRatio="xMaxYMax slice"><use href="#scene"/></svg><b class="cl">Continue Reading</b><div class="cw"><img src="${c.cover}"><div style="flex:1;min-width:0"><h3>${esc(c.title)}</h3><p>${esc(c.author)}</p><small>${Math.round(c.pct*100)}% complete</small><div class="bar" style="height:5px"><u style="width:${Math.round(c.pct*100)}%"></u></div></div><button class="play" style="width:52px;height:52px">${ico('play')}</button></div></div>`;
+if(hsOn('stats'))o+=`<div class="tiles">${T('book','#c9a8ff',books.length,'Books')}${T('clock','#ffb26b',n(b=>b.opened&&b.pct>0&&b.pct<.99),'Reading')}${T('check','#3ed6a0',n(b=>b.pct>=.99),'Completed')}${T('bm','#ffb02e',un.length,'To Read')}</div>`;
+if(hsOn('rec')&&rec.length)o+=H('Recommended For You','p1')+rrow(rec);
+o+=H('Explore Categories','p1')+ctiles();
+if(hsOn('recent')&&books.length)o+=H('Recently Added','p0')+rrow([...books].sort((a,b)=>b.added-a.added).slice(0,12));
+if(hsOn('cols')){const fv=n(b=>b.fav),L=[['heart','Favorites',fv],...Object.keys(C).slice(0,4).map(k=>['layers',k,C[k].length])];o+=H('Your Collections','pc')+`<div class="hcs">${L.map(([i,t,c])=>`<div class="hc" data-go="pc">${ico(i)}<div><b>${esc(t)}</b><small>${c} books</small></div></div>`).join('')}</div>`}
+if(!books.length)o+='<div class="empty">Your shelf is empty.<br>Open Library and tap Add Books.</div>';
+$('#home').innerHTML=o};
+/* LIBRARY */
+let LT='books';
+$('#p0').innerHTML=hdr('Library',rbtn('search','id="sb"')+rbtn('filter','data-toast="Use the chips and sort to filter"',1)+rbtn('dots','data-toast="More options soon"'))+`<input type="search" id="q" placeholder="Search title, author…" hidden>
+<div class="chips" id="lt">${[['books','Books','book'],['authors','Authors','user'],['cols','Collections','layers']].map(([k,t,i])=>`<span class="chip2${k=='books'?' on':''}" data-lt="${k}">${ico(i)} ${t}</span>`).join('')}</div>
+<div class="chips" id="chips">${[['all','All'],['reading','Reading'],['done','Completed'],['unread','Unread'],['fav','Favorites']].map(([k,t])=>`<span class="chip2${k=='all'?' on':''}" data-f="${k}" data-n="${t}">${t}</span>`).join('')}</div>
+<div class="ctl"><div class="seg" id="vms">${[['grid','grid'],['list','list'],['large','columns']].map(([k,i])=>`<span data-v="${k}" class="${(S.vw||'grid')==k?'on':''}">${ico(i)}</span>`).join('')}</div><label class="chip2 sel">${ico('sort')}<select id="sort"><option value="opened">Sort: Last read</option><option value="added">Sort: Date added</option><option value="title">Sort: Title</option><option value="author">Sort: Author</option><option value="pct">Sort: Progress</option></select></label></div>
+<div class="grid ${S.vw||'grid'}" id="grid"></div><div class="empty" id="e0">No books yet. Tap Add Books to import EPUB, PDF or TXT files.<br><br><button class="ghost" id="impf">Import a folder</button></div>
+<button class="fab" id="imp">${ico('plus')} Add Books</button><input type="file" id="fi" multiple accept=".epub,.pdf,.txt,.html,.htm" hidden><input type="file" id="ff" webkitdirectory multiple hidden>`;
+$('#imp').onclick=()=>$('#fi').click();$('#impf').onclick=()=>$('#ff').click();$('#fi').onchange=e=>{importFiles(e.target.files);e.target.value=''};$('#ff').onchange=e=>{importFiles(e.target.files);e.target.value=''};
+$('#q').oninput=render;$('#sort').onchange=render;$('#sb').onclick=()=>{$('#q').hidden=!$('#q').hidden;$('#q').focus()};
+$('#chips').onclick=e=>{const f=e.target.closest('[data-f]');if(!f)return;LF=f.dataset.f;$$('#chips .chip2').forEach(c=>c.classList.toggle('on',c==f));render()};
+$('#lt').onclick=e=>{const t=e.target.closest('[data-lt]');if(!t)return;LT=t.dataset.lt;$$('#lt .chip2').forEach(c=>c.classList.toggle('on',c==t));render()};
+$('#vms').onclick=e=>{const v=e.target.closest('[data-v]');if(!v)return;S.vw=v.dataset.v;save();$$('#vms span').forEach(c=>c.classList.toggle('on',c==v));render()};
+$('#grid').onclick=e=>{const a=e.target.closest('[data-au]');if(a){LT='books';$$('#lt .chip2').forEach(c=>c.classList.toggle('on',c.dataset.lt=='books'));$('#q').value=a.dataset.au;$('#q').hidden=false;render()}const c=e.target.closest('[data-col]');if(c)colPage(c.dataset.col);const s=e.target.closest('[data-sm]');if(s)smartPage(s.dataset.sm)};
+render=function(){const q=($('#q').value||'').trim(),so=$('#sort').value;let l=[...books];
+const f={all:()=>1,reading:b=>b.opened&&b.pct>0&&b.pct<.99,done:b=>b.pct>=.99,unread:b=>!b.opened,fav:b=>b.fav};
+$$('#chips .chip2').forEach(c=>c.textContent=c.dataset.n+' ('+books.filter(f[c.dataset.f]).length+')');
+if(q)l=l.map(b=>[score(b,q),b]).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]).map(x=>x[1]);else l.sort((a,b)=>so=='title'||so=='author'?norm(a[so]).localeCompare(norm(b[so])):(b[so]||0)-(a[so]||0));
+l=l.filter(f[LF]);const g=$('#grid');g.className='grid '+(LT=='books'?(S.vw||'grid'):LT=='authors'?'authors':'cols');$('#e0').hidden=books.length>0;
+if(LT=='books')g.innerHTML=l.map(card).join('');
+else if(LT=='authors'){const m={};l.forEach(b=>{const a=b.author||'Unknown author';(m[a]=m[a]||[]).push(b)});g.innerHTML=Object.entries(m).map(([a,bs])=>`<div class="mi card" data-au="${esc(a)}"><span class="mic">${ico('user')}</span><div><b>${esc(a)}</b><small>${bs.length} book${bs.length>1?'s':''}</small></div>${ico('right')}</div>`).join('')}
+else g.innerHTML='<div class="gcs">'+colCards()+'</div>';
+home();disc();cols();prof()};
+function go2lib(t){LT='books';$$('#lt .chip2').forEach(c=>c.classList.toggle('on',c.dataset.lt=='books'));$('#q').value=t;$('#q').hidden=false;showPg('p0');render()}
+/* DISCOVER */
+let DM='foryou';
+$('#p1').innerHTML=hdr('Discover',rbtn('search','data-srch="1"')+NB+rbtn('dots','data-toast="More options soon"'))+`<div class="heroD card"><svg class="hb" viewBox="0 0 400 130" preserveAspectRatio="xMaxYMax slice"><use href="#scene"/></svg><h2>Discover<br>Your Next Read</h2><p>Recommendations drawn from your own library, nothing leaves your device.</p><button class="btn sm" data-dm="foryou">Explore Now ${ico('right')}</button>
+<svg class="bkart" viewBox="0 0 120 80"><ellipse cx="60" cy="52" rx="56" ry="24" fill="#ffb26b" opacity=".35"/><path d="M6 54l54-14 54 14-54 14z" fill="#ffe3b8"/><path d="M60 40v28" stroke="#c9904a" stroke-width="2"/><path d="M22 50l38-9" stroke="#e0b078" fill="none"/></svg></div>
+<div class="mode" id="dmc">${[['foryou','For You','star'],['similar','Similar Books','compass'],['genre','By Genre','layers'],['random','Random','dice']].map(([k,t,i])=>`<span data-dm="${k}" class="${k=='foryou'?'on':''}">${ico(i)}${t}</span>`).join('')}</div><div id="dl"></div>`;
+$('#p1').onclick=e=>{const d=e.target.closest('[data-dm]');if(!d)return;DM=d.dataset.dm;$$('#dmc span').forEach(c=>c.classList.toggle('on',c.dataset.dm==DM));disc()};
+disc=function(){const r=books.filter(b=>b.pct>.05).sort((a,b)=>b.opened-a.opened)[0],sa=(x,y)=>norm(x.author)==norm(y.author),un=books.filter(b=>!b.opened);
+const au=new Set(books.filter(b=>b.pct>.05).map(b=>norm(b.author)).filter(Boolean)),rec=[...un.filter(b=>au.has(norm(b.author))),...un.filter(b=>!au.has(norm(b.author)))].slice(0,12);
+const sim=r?books.filter(b=>b.id!=r.id&&(!b.opened||sa(b,r))).sort((a,b)=>sa(b,r)-sa(a,r)).slice(0,12):[];
+const S2=(i,t,l)=>l.length?`<h2 class="h2b">${ico(i)} ${t}</h2>${rrow(l)}`:'';let o='';
+if(DM=='foryou')o=S2('book','Recommended For You',rec)+(r?S2('target','Because You Read “'+esc(r.title)+'”',sim):'')+`<h2 class="h2b">${ico('layers')} Explore by Genre</h2>`+ctiles();
+else if(DM=='similar')o=r?S2('target','Because You Read “'+esc(r.title)+'”',sim):'';
+else if(DM=='genre')o=ctiles();
+else{const p=un[Math.floor(Math.random()*un.length)];o=p?`<h2 class="h2b">${ico('dice')} Your Random Pick</h2>${rrow([p])}<button class="btn sm" data-dm="random" style="margin-top:12px">Another one</button>`:''}
+if(!o)o='<div class="empty">'+ico('compass')+'Nothing to suggest yet. Import books and read a few, and Novelle will recommend from your own library.</div>';$('#dl').innerHTML=o};
+/* COLLECTIONS */
+let CF='all';
+$('#pc').innerHTML=hdr('Collections',rbtn('search','data-srch="1"')+NB+rbtn('dots','data-toast="More options soon"'))+`<div class="top"><div class="ttl">${ico('layers')}<div><h2 class="h2b" style="margin:0">My Collections</h2><small style="color:var(--mut)">Organize your books</small></div></div><button class="btn sm" id="nc">${ico('plus')} New</button></div><div class="chips" id="cf">${[['all','All Collections'],['custom','Custom'],['smart','Smart']].map(([k,t])=>`<span class="chip2${k=='all'?' on':''}" data-cf="${k}">${t}</span>`).join('')}</div><div id="cl"></div>`;
+const newCol=()=>{const n=(prompt('Collection name')||'').trim();if(n&&!C[n]){C[n]=[];sc();cols();home()}};
+$('#nc').onclick=newCol;$('#cf').onclick=e=>{const t=e.target.closest('[data-cf]');if(!t)return;CF=t.dataset.cf;$$('#cf .chip2').forEach(c=>c.classList.toggle('on',c==t));cols()};
+function colCards(){return Object.keys(C).map(k=>{const bs=C[k].map(id=>books.find(b=>b.id==id)).filter(Boolean);return `<div class="gc" data-col="${esc(k)}"><div class="gv">${bs.slice(0,3).map(b=>`<img src="${b.cover}">`).join('')}</div><div class="gi">${ico('layers')}<div><b>${esc(k)}</b><small>${C[k].length} books</small></div></div></div>`}).join('')+`<div class="gc new" id="cn">${ico('plus')}Create Collection</div>`}
+cols=function(){const sm=`<h2 class="h2b">${ico('sparkles')} Smart Collections</h2><div class="gcs">${SM().map(([k,t,i,l])=>`<div class="gc" data-sm="${k}" style="height:76px"><div class="gi" style="top:0">${ico(i)}<div><b>${t}</b><small>${l.length} books</small></div></div></div>`).join('')}</div>`;
+$('#cl').innerHTML=(CF!='smart'?`<div class="gcs">${colCards()}</div>`:'')+(CF!='custom'?sm:'')};
+$('#cl').onclick=e=>{if(e.target.closest('#cn'))return newCol();const c=e.target.closest('[data-col]');if(c)colPage(c.dataset.col);const s=e.target.closest('[data-sm]');if(s)smartPage(s.dataset.sm)};$('#cl').onchange=null;
+function smartPage(k){const m=SM().find(x=>x[0]==k);sub(m[1],m[3].length?`<div class="grid">${m[3].map(card).join('')}</div>`:'<div class="empty">No books here yet.</div>')}
+/* PROFILE */
+const SET=[['palette','Appearance','Themes, colors, app icon, UI','appearance'],['book','Reading','Fonts, layout, gestures, reader','reading'],['layers','Library & Organization','Import, metadata, sorting, files','library'],['cloud','Sync & Cloud','Account, sync, multi-device','sync'],['down','Backup & Restore','Create backup, restore, export','backup'],['chart','Reading Statistics','Progress, activity, goals, insights','stats'],['sparkles','Recommendations','Discovery, home sections','recs'],['shield','Privacy & Data','Data control, history, export','privacy'],['sliders','Advanced','Storage, delete data','adv'],['info','About Novelle','Version, credits','about']];
+function page2(k){if(k=='library')return showPg('p0');
+if(k=='recs')return sub('Recommendations','<p class="empty" style="text-align:left">Recommendations are computed on this device from your own library.</p><h2>Home sections</h2>'+[['cont','Continue reading'],['stats','Library stats'],['rec','Recommended'],['recent','Recently added'],['cols','Collections']].map(([k,t])=>`<label class="row">${t}<input type="checkbox" data-hs="${k}"${hsOn(k)?' checked':''}></label>`).join(''));
+if(k=='about')return sub('About Novelle','<div class="empty">'+ico('book')+'Novelle 1.0<br>A private, customizable reading app.</div>');page(k)}
+prof=function(){const dn=books.filter(b=>b.pct>=.99).length,g=S.goal||12,pc=Math.min(100,Math.round(dn/g*100)),first=books.length?new Date(Math.min(...books.map(b=>b.added))):new Date();
+const st=(i,v,l)=>`<div>${ico(i)}<b>${v}</b>${l}</div>`;
+$('#p2').innerHTML=hdr('Profile &amp; Settings',rbtn('search','data-srch="1"')+rbtn('dots','data-toast="More options soon"'))+`<div class="top" style="gap:12px;justify-content:flex-start"><div class="av2">${ico('user')}</div><div style="flex:1"><h2 class="h2b" style="margin:0">My Reading Space</h2><small style="color:var(--mut)">Reader since ${first.toLocaleDateString(undefined,{month:'short',year:'numeric'})}</small></div></div>
+<div class="card strip">${st('book',books.length,'Books')}${st('clock',books.filter(b=>b.opened&&b.pct>0&&b.pct<.99).length,'Reading')}${st('check',dn,'Completed')}${st('layers',Object.keys(C).length,'Collections')}</div>
+<div class="pair"><div class="mi card" data-m="stats"><div class="ring" style="background:conic-gradient(var(--ac) ${pc}%,#ffffff22 0)"><b>${pc}%</b></div><div><b>Reading Goal</b><small>${dn} / ${g} books</small></div></div><div class="mi card" data-m="stats">${ico('flame')}<div><b>${streak()} Days</b><small>Reading Streak</small></div></div></div>
+<h2 class="h2b">${ico('gear')} Settings</h2><div class="sg">${SET.map(m=>`<div class="mi card" data-m="${m[3]}"><span class="mic">${ico(m[0])}</span><div><b>${m[1]}</b><small>${m[2]}</small></div></div>`).join('')}</div>
+<h2 class="h2b">${ico('sparkles')} Customization</h2><div class="cz"><div data-m="appearance"><div class="pv"><img src="${ICONS[S.ic]}"></div><b>App Icon</b><small>Change</small></div><div data-m="appearance"><div class="pv" style="background:linear-gradient(160deg,#3a1a6e,#c4586f)">${ico('moon')}</div><b>App Theme</b><small>${(ICN.find(x=>x[1]==S.ic)||['Midnight'])[0]}</small></div><div data-m="appearance"><div class="pv" style="background:${TH[S.th][0]};color:${TH[S.th][1]}">Aa</div><b>Reader Theme</b><small>${TL[S.th]}</small></div><div data-m="reading"><div class="pv" style="font-family:${S.ff}">Aa</div><b>Font</b><small>${S.ff.split(',')[0].replace(/'/g,'')}</small></div></div>`};
+$('#p2').onclick=e=>{const m=e.target.closest('[data-m]');if(m)page2(m.dataset.m)};
+const op=sb.onchange;sb.onchange=e=>{op(e);if(e.target.dataset.hs)home()};
+/* NOTES (highlights, notes, bookmarks) */
+const HC={yellow:'#ffd23f',pink:'#ff6fae',purple:'#a66bff',blue:'#4f9dff',green:'#3ed69b'};
+function noteItems(list){const it=[];(list||books).forEach(b=>{const bi=books.indexOf(b);(b.hl||[]).forEach((h,i)=>it.push({t:h.note?'nt':'hl',d:h.d,h:`<div class="hlr" data-hb="${bi}" data-hi="${i}"><s style="background:${HC[h.c]}"></s><div><div>${esc(h.text)}</div>${h.note?`<small style="color:var(--ac)">${esc(h.note)}</small><br>`:''}<small style="color:var(--mut)">${esc(b.title)}</small></div></div>`}));(b.marks||[]).forEach((m,i)=>it.push({t:'bm',d:m.d,h:`<div class="hlr" data-open="${esc(b.id)}" data-l="${i}"><s style="background:#ff7a7a"></s><div><b>Bookmark</b><br><small style="color:var(--mut)">${esc(b.title)} · ${m.t}</small></div></div>`}))});return it.sort((a,b)=>b.d-a.d)}
+const pg0=page;page=function(k,keep){if(k!='notes')return pg0(k,keep);const it=noteItems().filter(x=>NF=='all'||x.t==NF||(NF=='hl'&&x.t=='hl'));
+sub('Annotations',`<div class="tabs">${[['all','All'],['hl','Highlights'],['nt','Notes'],['bm','Bookmarks']].map(([k,t])=>`<span data-nf="${k}" class="${NF==k?'on':''}">${t}</span>`).join('')}</div>`+(it.length?it.map(x=>x.h).join(''):'<div class="empty">Nothing here yet. Select text while reading to highlight it.</div>'),keep)};
+const oc4=sb.onclick;sb.onclick=async e=>{const h=e.target.closest('[data-hb]');if(h){const b=books[+h.dataset.hb];await open(b.id);go2(b.hl[+h.dataset.hi].cfi)}else oc4(e)};
+/* READER */
+let SEL=null,AT='d';const TI={white:'sun',paper:'sun',sepia:'book',dark:'moon',midnight:'moon',oled:'circle'};
+$('#top').insertAdjacentHTML('afterbegin',SC);$('#bk').insertAdjacentHTML('afterend','<img id="rc">');
+$('#bm').insertAdjacentHTML('beforebegin','<button id="tsr">'+ico('search')+'</button>');$('#tc').insertAdjacentHTML('afterend','<button id="tmo">'+ico('dots')+'</button>');
+$('#tsr').onclick=()=>srch();$('#tmo').onclick=()=>aa('o');
+qa.innerHTML=`<button data-q="bm">${ico('bm')}</button><button data-q="se">${ico('search')}</button><button data-q="nt">${ico('msg')}</button><button data-q="tc">${ico('list')}</button><i class="vr"></i><button data-q="aa">${ico('gear')}</button>`;
+qa.onclick=e=>{const qq=e.target.closest('[data-q]');if(!qq)return;const q=qq.dataset.q;if(q=='bm')$('#bm').click();else if(q=='tc')$('#tc').click();else if(q=='aa')aa();else if(q=='se')srch();else rnotes()};
+const seg=(k,v)=>`<div class="seg">${v.map(([x,t])=>`<span data-set="${k}:${x}" class="${(S[k]??(k=='mg'?1:16))==x?'on':''}">${t}</span>`).join('')}</div>`;
+aa=function(t){if(t)AT=t;const T=[['d','Display','text'],['l','Layout','columns'],['o','Other','sliders']];
+const up=AT=='d'?`<div class="pr3"><div><small>Font</small>${opt('ff',[['Georgia,serif','Georgia'],['system-ui,sans-serif','Sans'],["'Times New Roman',serif",'Times'],['ui-monospace,monospace','Mono']])}</div><div><small>Text size</small>${stp('fs',S.fs)}</div><div><small>Spacing</small>${seg('lh',[[13,'S'],[16,'M'],[19,'L']])}</div><div><small>Margins</small>${seg('mg',[[0,'S'],[1,'M'],[2,'L']])}</div></div>`:AT=='l'?`<div class="row">Reading Mode${opt('md',[['paginated','Paginated'],['scrolled-doc','Continuous']])}</div><div class="row">Page Turn${opt('an',[['slide','Slide'],['fade','Fade'],['flip','3D Flip'],['none','None']])}</div>`:`<div class="row">Brightness<input type="range" id="brr" min="30" max="100" value="${S.br||100}"></div>`;
+sh.innerHTML=`<i class="grab"></i><div class="tabs2">${T.map(([k,n,i])=>`<span data-tab="${k}" class="${AT==k?'on':''}">${ico(i)} ${n}</span>`).join('')}</div>${up}<div class="tiles2">${Object.keys(TL).map(k=>`<div data-k="${k}" class="${S.th==k?'on':''}" style="background:${TH[k][0]};color:${TH[k][1]}">${ico(TI[k])}${TL[k]}</div>`).join('')}</div>`;sh.className='on'};
+sh.onclick=e=>{const t=e.target.closest('[data-tab],[data-set]');if(t){if(t.dataset.tab)AT=t.dataset.tab;else{const[k,v]=t.dataset.set.split(':');S[k]=+v;save();applyTheme()}return aa()}ui(e,aa)};
+sh.oninput=e=>{if(e.target.id=='brr'){S.br=+e.target.value;view.style.filter=`brightness(${S.br}%)`;save()}};
+const at0=applyTheme;applyTheme=function(){at0();$('#rd').classList.toggle('light',['white','paper','sepia'].includes(S.th));if(rend)rend.themes.override('padding','0 '+[10,24,44][S.mg??1]+'px');if(S.br)view.style.filter=`brightness(${S.br}%)`};
+function rnotes(){const it=noteItems([cur]);sh.innerHTML='<i class="grab"></i><h2>Notes &amp; Highlights</h2>'+(it.length?it.map(x=>x.h).join(''):'<div class="empty">Select text to highlight it. Tap the bookmark button to save a spot.</div>');sh.className='on'}
+sh.addEventListener('click',e=>{const h=e.target.closest('[data-hi]'),m=e.target.closest('[data-open]');if(h){go2(cur.hl[+h.dataset.hi].cfi);sh.className=''}else if(m){go2(cur.marks[+m.dataset.l].l);sh.className=''}});
+function hlDraw(h){try{rend.annotations.highlight(h.cfi,{},null,'hl',{fill:HC[h.c],'fill-opacity':'0.4'})}catch(e){}}
+const hideSel=()=>{SEL=null;$('#sel').className=''};
+$('#sel').innerHTML=Object.keys(HC).map(k=>`<i data-hc="${k}" style="background:${HC[k]}"></i>`).join('')+`<span style="width:1px;height:22px;background:#fff3"></span><button data-sa="note">${ico('msg')}</button><button data-sa="copy">${ico('copy')}</button><button data-sa="x">${ico('x')}</button>`;
+$('#sel').onclick=e=>{const t=e.target.closest('[data-hc],[data-sa]');if(!t||!SEL)return;const d=t.dataset;
+const save1=(c,note)=>{cur.hl=cur.hl||[];const h={cfi:SEL.cfi,c,text:SEL.txt.slice(0,300),note:note||'',d:Date.now()};cur.hl.push(h);put(cur);hlDraw(h)};
+if(d.hc)save1(d.hc);else if(d.sa=='note'){const n=prompt('Add a note');if(n)save1('yellow',n)}else if(d.sa=='copy'){try{navigator.clipboard.writeText(SEL.txt)}catch(x){}toast('Copied')}
+try{rend.getContents().forEach(c=>c.window.getSelection().removeAllRanges())}catch(x){}hideSel()};
+const op0=open;open=async function(id){const p=op0(id),b=books.find(x=>x.id==id);if(!b)return p;$('#rt').innerHTML=`<b>${esc(b.title)}</b><small>${esc(b.author)}</small>`;$('#rc').src=b.cover;$('#zones').style.pointerEvents=b.fmt=='epub'?'none':'auto';hideSel();
+await p;applyTheme();if(rend&&b.fmt=='epub'){(b.hl||[]).forEach(hlDraw);
+rend.on('selected',(cfi,ct)=>{const s=ct.window.getSelection(),txt=s.toString().trim();if(!txt)return;SEL={cfi,txt};let y=140;try{y=s.getRangeAt(0).getBoundingClientRect().top}catch(x){}const bar=$('#sel');bar.style.top=Math.max(110,y-64)+'px';bar.className='on'});
+rend.on('click',e=>{const w=e.view,s=w&&w.getSelection&&w.getSelection().toString();if(s)return;if(SEL){hideSel();return}sh.className='';tap(e.clientX)});
+let sx=0,sy=0;rend.on('touchstart',e=>{sx=e.changedTouches[0].screenX;sy=e.changedTouches[0].screenY});rend.on('touchend',e=>{const dx=e.changedTouches[0].screenX-sx,dy=e.changedTouches[0].screenY-sy;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)go(dx<0?1:-1)})}return p};
+showPg('ph');render();
+</script>
+</body></html>

@@ -1,0 +1,46 @@
+name: Build Novelle APK
+on:
+  push: {branches: [main]}
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unpack novelle-android.zip
+        run: |
+          mkdir _x
+          unzip -q novelle-android.zip -d _x
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: 17}
+      - name: Install
+        working-directory: _x/nv
+        run: npm install
+      - name: Prepare web assets
+        working-directory: _x/nv
+        run: |
+          mkdir -p www/lib
+          cp node_modules/jszip/dist/jszip.min.js node_modules/epubjs/dist/epub.min.js node_modules/pdfjs-dist/build/pdf.min.js node_modules/pdfjs-dist/build/pdf.worker.min.js www/lib/
+          cp src/index.html www/index.html
+          sed -i 's#https://cdnjs[^"]*/jszip.min.js#lib/jszip.min.js#; s#https://cdnjs[^"]*/epub.min.js#lib/epub.min.js#; s#https://cdnjs[^"]*/pdf.min.js#lib/pdf.min.js#' www/index.html
+          sed -i 's#</body>#<script>pdfjsLib.GlobalWorkerOptions.workerSrc="lib/pdf.worker.min.js"</script></body>#' www/index.html
+      - name: Add Android
+        working-directory: _x/nv
+        run: npx cap add android
+      - name: Icons
+        working-directory: _x/nv
+        run: npx @capacitor/assets generate --android --iconBackgroundColor '#120c26'
+      - name: Sync
+        working-directory: _x/nv
+        run: npx cap sync android
+      - name: Build APK
+        working-directory: _x/nv/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Novelle-APK
+          path: _x/nv/android/app/build/outputs/apk/debug/app-debug.apk

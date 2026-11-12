@@ -24,14 +24,20 @@ jobs:
           mkdir -p www/lib
           cp node_modules/jszip/dist/jszip.min.js node_modules/epubjs/dist/epub.min.js node_modules/pdfjs-dist/build/pdf.min.js node_modules/pdfjs-dist/build/pdf.worker.min.js www/lib/
           cp src/index.html www/index.html
+          cp -r src/fonts www/fonts
           sed -i 's#https://cdnjs[^"]*/jszip.min.js#lib/jszip.min.js#; s#https://cdnjs[^"]*/epub.min.js#lib/epub.min.js#; s#https://cdnjs[^"]*/pdf.min.js#lib/pdf.min.js#' www/index.html
           sed -i 's#</body>#<script>pdfjsLib.GlobalWorkerOptions.workerSrc="lib/pdf.worker.min.js"</script></body>#' www/index.html
       - name: Add Android
         working-directory: _x/nv
         run: npx cap add android
-      - name: Icons
+      - name: Icons and native folder scanner
         working-directory: _x/nv
-        run: npx @capacitor/assets generate --android --iconBackgroundColor '#120c26'
+        run: |
+          pip install pillow
+          python3 tools/icons.py
+          D=android/app/src/main/java/com/novelle/reader
+          mkdir -p $D && cp tools/native/*.java $D/
+          sed -i "s/^dependencies {/dependencies {\n    implementation 'androidx.documentfile:documentfile:1.0.1'/" android/app/build.gradle
       - name: Sync
         working-directory: _x/nv
         run: npx cap sync android
